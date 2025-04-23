@@ -1,5 +1,78 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой персональный сайт</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
 <body>
-  я люблю трек мяу мяу мяу мяу
+    <div class="container">
+        <header>
+            <h1>Привет, я <span class="name-highlight">[Ваше Имя]</span></h1>
+            <p class="subtitle">Добро пожаловать на мой персональный сайт</p>
+        </header>
+
+        <div class="button-container">
+            <button class="info-btn" data-target="about">Обо мне</button>
+            <button class="info-btn" data-target="interests">Интересы</button>
+            <button class="info-btn" data-target="skills">Навыки</button>
+            <button class="info-btn" data-target="contact">Контакты</button>
+        </div>
+
+        <div class="info-panel" id="about">
+            <h2>Обо мне</h2>
+            <p>Здесь вы можете написать краткую информацию о себе, где учились/работаете, ваши основные достижения.</p>
+            <img src="https://via.placeholder.com/300" alt="Мое фото" class="profile-img">
+            <button class="close-btn">×</button>
+        </div>
+
+        <div class="info-panel" id="interests">
+            <h2>Мои интересы</h2>
+            <ul>
+                <li>Программирование</li>
+                <li>Путешествия</li>
+                <li>Фотография</li>
+                <li>Спорт</li>
+                <!-- Добавьте свои интересы -->
+            </ul>
+            <button class="close-btn">×</button>
+        </div>
+
+        <div class="info-panel" id="skills">
+            <h2>Мои навыки</h2>
+            <div class="skill-bars">
+                <div class="skill" data-skill="HTML">HTML <span>90%</span></div>
+                <div class="skill" data-skill="CSS">CSS <span>85%</span></div>
+                <div class="skill" data-skill="JavaScript">JavaScript <span>75%</span></div>
+                <div class="skill" data-skill="Design">Design <span>60%</span></div>
+            </div>
+            <button class="close-btn">×</button>
+        </div>
+
+        <div class="info-panel" id="contact">
+            <h2>Свяжитесь со мной</h2>
+            <form class="contact-form">
+                <input type="text" placeholder="Ваше имя">
+                <input type="email" placeholder="Ваш email">
+                <textarea placeholder="Ваше сообщение"></textarea>
+                <button type="submit">Отправить</button>
+            </form>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-vk"></i></a>
+                <a href="#"><i class="fab fa-telegram"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+            <button class="close-btn">×</button>
+        </div>
+
+        <div class="overlay"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>
