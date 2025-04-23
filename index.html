@@ -1,78 +1,209 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой персональный сайт</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Обо мне</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .hidden-text { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+    .visible-text { opacity: 1; transform: translateY(0); }
+    /* Замените 'light-bg.jpg' и 'dark-bg.jpg' на ваши URL-адреса изображений */
+    .bg-light { background: url('light-bg.jpg') center/cover no-repeat; }
+    .bg-dark { background: url('dark-bg.jpg') center/cover no-repeat; }
+    .bg-gradient-light { background: linear-gradient(135deg, #f0f9ff, #bae6fd); }
+    .bg-gradient-dark { background: linear-gradient(135deg, #0f172a, #1e40af); }
+    .text-dark { color: #1e293b; }
+    .text-light { color: #f1f5f9; }
+    .social-icon { transition: transform 0.3s ease, color 0.3s ease; }
+    .social-icon:hover { transform: scale(1.2); }
+    .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #9ca3af; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #3b82f6; }
+    input:checked + .slider:before { transform: translateX(24px); }
+    .overlay { background: rgba(0, 0, 0, 0.3); } /* Затемнение для читаемости текста */
+    @media (max-width: 640px) {
+      .social-icon i { font-size: 1.5rem; }
+      .switch { width: 40px; height: 20px; }
+      .slider:before { height: 14px; width: 14px; left: 3px; bottom: 3px; }
+      input:checked + .slider:before { transform: translateX(20px); }
+      #name { font-size: 2.5rem; }
+      .text-lg { font-size: 1rem; }
+      .gap-8 { gap: 1.5rem; }
+      .px-4 { padding-left: 1rem; padding-right: 1rem; }
+      .space-x-4 > * + * { margin-left: 0.75rem; }
+    }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Привет, я <span class="name-highlight">[Ваше Имя]</span></h1>
-            <p class="subtitle">Добро пожаловать на мой персональный сайт</p>
-        </header>
-
-        <div class="button-container">
-            <button class="info-btn" data-target="about">Обо мне</button>
-            <button class="info-btn" data-target="interests">Интересы</button>
-            <button class="info-btn" data-target="skills">Навыки</button>
-            <button class="info-btn" data-target="contact">Контакты</button>
-        </div>
-
-        <div class="info-panel" id="about">
-            <h2>Обо мне</h2>
-            <p>Здесь вы можете написать краткую информацию о себе, где учились/работаете, ваши основные достижения.</p>
-            <img src="https://via.placeholder.com/300" alt="Мое фото" class="profile-img">
-            <button class="close-btn">×</button>
-        </div>
-
-        <div class="info-panel" id="interests">
-            <h2>Мои интересы</h2>
-            <ul>
-                <li>Программирование</li>
-                <li>Путешествия</li>
-                <li>Фотография</li>
-                <li>Спорт</li>
-                <!-- Добавьте свои интересы -->
-            </ul>
-            <button class="close-btn">×</button>
-        </div>
-
-        <div class="info-panel" id="skills">
-            <h2>Мои навыки</h2>
-            <div class="skill-bars">
-                <div class="skill" data-skill="HTML">HTML <span>90%</span></div>
-                <div class="skill" data-skill="CSS">CSS <span>85%</span></div>
-                <div class="skill" data-skill="JavaScript">JavaScript <span>75%</span></div>
-                <div class="skill" data-skill="Design">Design <span>60%</span></div>
-            </div>
-            <button class="close-btn">×</button>
-        </div>
-
-        <div class="info-panel" id="contact">
-            <h2>Свяжитесь со мной</h2>
-            <form class="contact-form">
-                <input type="text" placeholder="Ваше имя">
-                <input type="email" placeholder="Ваш email">
-                <textarea placeholder="Ваше сообщение"></textarea>
-                <button type="submit">Отправить</button>
-            </form>
-            <div class="social-links">
-                <a href="#"><i class="fab fa-vk"></i></a>
-                <a href="#"><i class="fab fa-telegram"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-            </div>
-            <button class="close-btn">×</button>
-        </div>
-
-        <div class="overlay"></div>
+<body class="min-h-screen flex flex-col items-center justify-center px-4 transition-all duration-500 bg-light overlay" id="body">
+  <div class="w-full max-w-3xl">
+    <div class="flex justify-end items-center mb-6 space-x-4">
+      <div class="flex items-center space-x-2">
+        <span id="themeLabel" class="font-medium text-dark text-sm">Светлая</span>
+        <label class="switch">
+          <input type="checkbox" id="themeSwitch">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span id="langLabel" class="font-medium text-dark text-sm">Русский</span>
+        <label class="switch">
+          <input type="checkbox" id="langSwitch">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
+    
+    <h1 id="name" class="text-5xl font-extrabold text-center mb-8 text-dark transition-all duration-500">Я — [Ваше Имя]</h1>
+    
+    <div class="space-y-6 text-lg leading-relaxed">
+      <p id="description" class="hidden-text text-dark text-center">
+        Привет! Я — [Bach Le]Моя жизнь — это смесь вдохновения, экспериментов и страсти к открытиям. Я верю, что каждый день может стать приключением, если подойти к нему с открытым сердцем.
+      </p>
+      <p id="interests" class="hidden-text text-dark text-center">
+        Мои интересы многогранны: программирование, где я создаю цифровые миры; музыка, которая задаёт ритм моей жизни; фильмы, погружающие в новые истории; спорт, дающий энергию; фотография, чтобы запечатлеть моменты; и путешествия, открывающие мир. От кодинга до артхаусного кино — я нахожу вдохновение во всём!
+      </p>
+    </div>
+    
+    <h2 id="contacts" class="hidden-text text-2xl font-bold text-center mt-12 mb-6 text-dark transition-all duration-500">Мои контакты</h2>
+    
+    <div class="flex justify-center gap-8 mt-6 flex-wrap">
+      <a href="https://www.facebook.com/profile.php?id=100009626650037" target="_blank" class="social-icon text-blue-600">
+        <i class="fab fa-facebook-f fa-2x"></i>
+      </a>
+      <a href="https://www.instagram.com/bachleeee228" target="_blank" class="social-icon text-pink-600">
+        <i class="fab fa-instagram fa-2x"></i>
+      </a>
+      <a href="https://t.me/bachleeee" target="_blank" class="social-icon text-blue-400">
+        <i class="fab fa-telegram-plane fa-2x"></i>
+      </a>
+      <a href="https://discordapp.com/users/bachleeeee" target="_blank" class="social-icon text-indigo-500">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a href="https://open.spotify.com/user/mqh5fxwz8o7v16c1jr4mg0zwd" target="_blank" class="social-icon text-green-500">
+        <i class="fab fa-spotify fa-2x"></i>
+      </a>
+      <a href="https://letterboxd.com/leemeeoowchiik/" target="_blank" class="social-icon text-red-500">
+        <i class="fas fa-film fa-2x"></i>
+      </a>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script>
+    const body = document.getElementById('body');
+    const themeSwitch = document.getElementById('themeSwitch');
+    const themeLabel = document.getElementById('themeLabel');
+    const langSwitch = document.getElementById('langSwitch');
+    const langLabel = document.getElementById('langLabel');
+    const name = document.getElementById('name');
+    const description = document.getElementById('description');
+    const interests = document.getElementById('interests');
+    const contacts = document.getElementById('contacts');
+    const textElements = document.querySelectorAll('.hidden-text');
+    const socialIcons = document.querySelectorAll('.social-icon');
+
+    const texts = {
+      ru: {
+        name: 'Я — Bach Le',
+        description: 'Привет! Я — Bach Le. Моя жизнь — это смесь вдохновения, экспериментов и страсти к открытиям. Я верю, что каждый день может стать приключением, если подойти к нему с открытым сердцем.',
+        interests: 'Мои интересы многогранны: музыка, которая задаёт ритм моей жизни; фильмы, погружающие в новые истории; программирование ; фотография и путешествия, открывающие мир. От кодинга до артхаусного кино — я нахожу вдохновение во всём!',
+        contacts: 'Мои контакты',
+        themeLabel: 'Светлая',
+        langLabel: 'Русский'
+      },
+      en: {
+        name: 'I am [Your Name]',
+        description: 'Hey! I’m Bach Le. My life is a blend of inspiration, experimentation, and a Chopin passion for discovery. I believe every day can be an adventure if you approach it with an open heart.',
+        interests: 'My interests are diverse: coding, where I build digital worlds; music, setting the rhythm of my life; movies, immersing me in new stories; sports,photography and travel, unveiling the world. From coding to arthouse films — I find inspiration in everything!',
+        contacts: 'My contacts',
+        themeLabel: 'Light',
+        langLabel: 'English'
+      }
+    };
+
+    let currentLang = 'ru';
+    let isDarkTheme = false;
+
+    function applyTheme() {
+      body.classList.remove('bg-light', 'bg-dark', 'bg-gradient-light', 'bg-gradient-dark');
+      if (isDarkTheme) {
+        body.classList.add('bg-dark', 'overlay');
+        name.classList.remove('text-dark');
+        name.classList.add('text-light');
+        description.classList.remove('text-dark');
+        description.classList.add('text-light');
+        interests.classList.remove('text-dark');
+        interests.classList.add('text-light');
+        contacts.classList.remove('text-dark');
+        contacts.classList.add('text-light');
+        themeLabel.classList.remove('text-dark');
+        themeLabel.classList.add('text-light');
+        langLabel.classList.remove('text-dark');
+        langLabel.classList.add('text-light');
+        socialIcons.forEach(icon => {
+          icon.classList.remove('text-dark');
+          icon.classList.add('text-light');
+        });
+        themeLabel.textContent = texts[currentLang].themeLabel.replace('Светлая', 'Тёмная').replace('Light', 'Dark');
+      } else {
+        body.classList.add('bg-light', 'overlay');
+        name.classList.remove('text-light');
+        name.classList.add('text-dark');
+        description.classList.remove('text-light');
+        description.classList.add('text-dark');
+        interests.classList.remove('text-light');
+        interests.classList.add('text-dark');
+        contacts.classList.remove('text-light');
+        contacts.classList.add('text-dark');
+        themeLabel.classList.remove('text-light');
+        themeLabel.classList.add('text-dark');
+        langLabel.classList.remove('text-light');
+        langLabel.classList.add('text-dark');
+        socialIcons.forEach(icon => {
+          icon.classList.remove('text-light');
+          icon.classList.add('text-dark');
+        });
+        themeLabel.textContent = texts[currentLang].themeLabel;
+      }
+    }
+
+    function applyLanguage() {
+      name.textContent = texts[currentLang].name;
+      description.textContent = texts[currentLang].description;
+      interests.textContent = texts[currentLang].interests;
+      contacts.textContent = texts[currentLang].contacts;
+      langLabel.textContent = texts[currentLang].langLabel;
+      themeLabel.textContent = isDarkTheme ? texts[currentLang].themeLabel.replace('Светлая', 'Тёмная').replace('Light', 'Dark') : texts[currentLang].themeLabel;
+    }
+
+    function revealText() {
+      textElements.forEach((el, index) => {
+        setTimeout(() => {
+          el.classList.add('visible-text');
+        }, index * 400);
+      });
+    }
+
+    themeSwitch.addEventListener('change', () => {
+      isDarkTheme = themeSwitch.checked;
+      applyTheme();
+    });
+
+    langSwitch.addEventListener('change', () => {
+      currentLang = langSwitch.checked ? 'en' : 'ru';
+      applyLanguage();
+    });
+
+    window.addEventListener('load', () => {
+      applyTheme();
+      applyLanguage();
+      revealText();
+    });
+  </script>
 </body>
 </html>
