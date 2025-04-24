@@ -12,16 +12,23 @@
     .hidden-text { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
     .visible-text { opacity: 1; transform: translateY(0); }
     
-    .overlay::before { position: absolute; content: ''; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); }
+    .overlay::before {
+      position: absolute;
+      content: '';
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      pointer-events: none; 
+    }
 
     .bg-light { background: url('./catalina1.webp') center/cover no-repeat; }
-    .bg-dark { background: url('catalina2.webp') center/cover no-repeat; }
+    .bg-dark { background: url('./catalina2.webp') center/cover no-repeat; }
 
     .bg-gradient-light { background: linear-gradient(135deg, #f0f9ff, #bae6fd); }
     .bg-gradient-dark { background: linear-gradient(135deg, #0f172a, #1e40af); }
 
-    .text-dark { color: #f0f9ff; }
-    .text-light { color: #ef4444; }
+    .text-dark { color: #f0f9ff; } 
+    .text-light { color: #ef4444; } 
 
     .social-icon { transition: transform 0.3s ease, color 0.3s ease; }
     .social-icon:hover { transform: scale(1.2); }
@@ -67,14 +74,14 @@
       </div>
     </div>
     
-    <h1 id="name" class="text-5xl font-extrabold text-center mb-8 text-dark transition-all duration-500">Я — [Ваше Имя]</h1>
+    <h1 id="name" class="text-5xl font-extrabold text-center mb-8 text-dark transition-all duration-500">Я — Bach Le</h1>
     
     <div class="space-y-6 text-lg leading-relaxed">
       <p id="description" class="hidden-text text-dark text-center">
-        Привет! Я — [Bach Le]Моя жизнь — это смесь вдохновения, экспериментов и страсти к открытиям. Я верю, что каждый день может стать приключением, если подойти к нему с открытым сердцем.
+        Привет! Я — Bach Le. Моя жизнь — это смесь вдохновения, экспериментов и страсти к открытиям. Я верю, что каждый день может стать приключением, если подойти к нему с открытым сердцем.
       </p>
       <p id="interests" class="hidden-text text-dark text-center">
-        Мои интересы многогранны: программирование, где я создаю цифровые миры; музыка, которая задаёт ритм моей жизни; фильмы, погружающие в новые истории; спорт, дающий энергию; фотография, чтобы запечатлеть моменты; и путешествия, открывающие мир. От кодинга до артхаусного кино — я нахожу вдохновение во всём!
+        Мои интересы многогранны: музыка, которая задаёт ритм моей жизни; фильмы, погружающие в новые истории; программирование; фотография и путешествия, открывающие мир. От кодинга до артхаусного кино — я нахожу вдохновение во всём!
       </p>
     </div>
     
@@ -119,15 +126,15 @@
       ru: {
         name: 'Я — Bach Le',
         description: 'Привет! Я — Bach Le. Моя жизнь — это смесь вдохновения, экспериментов и страсти к открытиям. Я верю, что каждый день может стать приключением, если подойти к нему с открытым сердцем.',
-        interests: 'Мои интересы многогранны: музыка, которая задаёт ритм моей жизни; фильмы, погружающие в новые истории; программирование ; фотография и путешествия, открывающие мир. От кодинга до артхаусного кино — я нахожу вдохновение во всём!',
+        interests: 'Мои интересы многогранны: музыка, которая задаёт ритм моей жизни; фильмы, погружающие в новые истории; программирование; фотография и путешествия, открывающие мир. От кодинга до артхаусного кино — я нахожу вдохновение во всём!',
         contacts: 'Мои контакты',
         themeLabel: 'Светлая',
         langLabel: 'Русский'
       },
       en: {
         name: 'I am Bach Le',
-        description: 'Hey! I’m Bach Le. My life is a blend of inspiration, experimentation, and a Chopin passion for discovery. I believe every day can be an adventure if you approach it with an open heart.',
-        interests: 'My interests are diverse: coding, where I build digital worlds; music, setting the rhythm of my life; movies, immersing me in new stories; sports,photography and travel, unveiling the world. From coding to arthouse films — I find inspiration in everything!',
+        description: 'Hey! I’m Bach Le. My life is a blend of inspiration, experimentation, and a passion for discovery. I believe every day can be an adventure if you approach it with an open heart.',
+        interests: 'My interests are diverse: coding, where I build digital worlds; music, setting the rhythm of my life; movies, immersing me in new stories; photography and travel, unveiling the world. From coding to arthouse films — I find inspiration in everything!',
         contacts: 'My contacts',
         themeLabel: 'Light',
         langLabel: 'English'
@@ -153,10 +160,6 @@
         themeLabel.classList.add('text-light');
         langLabel.classList.remove('text-dark');
         langLabel.classList.add('text-light');
-        socialIcons.forEach(icon => {
-          icon.classList.remove('text-dark');
-          icon.classList.add('text-light');
-        });
         themeLabel.textContent = texts[currentLang].themeLabel.replace('Светлая', 'Тёмная').replace('Light', 'Dark');
       } else {
         body.classList.add('bg-light', 'overlay');
@@ -172,10 +175,6 @@
         themeLabel.classList.add('text-dark');
         langLabel.classList.remove('text-light');
         langLabel.classList.add('text-dark');
-        socialIcons.forEach(icon => {
-          icon.classList.remove('text-light');
-          icon.classList.add('text-dark');
-        });
         themeLabel.textContent = texts[currentLang].themeLabel;
       }
     }
