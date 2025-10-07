@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест на знание техкарт - Вьетнамская кухня</title>
+    <title>Kiểm tra định mức - Test kiến thức TK</title>
     <style>
         * {
             margin: 0;
@@ -115,6 +115,12 @@
             border-left: 4px solid #dc3545;
         }
         
+        .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
         .result-panel {
             position: sticky;
             top: 0;
@@ -181,6 +187,19 @@
             background-color: #c0392b;
         }
         
+        .language-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
         @media (max-width: 768px) {
             .ingredient {
                 flex-direction: column;
@@ -195,27 +214,37 @@
             input {
                 margin: 5px 0;
             }
+            
+            .language-btn {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Тест на знание техкарт - Вьетнамская кухня</h1>
+    <button class="language-btn" onclick="toggleLanguage()">Tiếng Việt</button>
+    
+    <h1 id="mainTitle">Тест на знание техкарт - Вьетнамская кухня</h1>
     
     <div id="modeSelection" class="mode-selection">
-        <h2>Выберите режим тестирования:</h2>
+        <h2 id="modeTitle">Выберите режим тестирования:</h2>
         <button class="mode-btn" onclick="startTest('random')">Рандомные блюда (по 2 из каждого раздела)</button>
         <button class="mode-btn" onclick="startTest('full')">Полная проверка всех блюд</button>
     </div>
     
     <div id="testContainer" class="hidden">
         <div class="result-panel">
-            <button onclick="checkAll()">Проверить все ответы</button>
+            <button onclick="checkAll()" id="checkBtn">Проверить все ответы</button>
             <div id="totalResult" class="total-score"></div>
+            <button class="restart-btn" onclick="restartTest()" id="restartBtn1">Попробовать еще раз</button>
         </div>
         
         <div id="dishesContainer"></div>
         
-        <button class="restart-btn" onclick="restartTest()">Попробовать еще раз</button>
+        <button class="restart-btn" onclick="restartTest()" id="restartBtn2">Попробовать еще раз</button>
     </div>
 
     <script>
@@ -407,11 +436,105 @@
                     { ingredient: "Утка жареная пф / Vịt quay pf", quantity: 50, unit: "гр" },
                     { ingredient: "Соус Перечный для утки пф / Sốt tiêu cho vịt pf", quantity: 30, unit: "гр" }
                 ]
+            },
+            "ПФ Соусы": {
+                "Соус Кисло-сладкий для салата пф / Nước Sốt Chua Ngọt Cho Salad pf": [
+                    { ingredient: "Соус Рыбный / Nước mắm nhạt", quantity: 400, unit: "гр" },
+                    { ingredient: "Сахар / Đường", quantity: 600, unit: "гр" },
+                    { ingredient: "Вода / Nước", quantity: 100, unit: "гр" },
+                    { ingredient: "Уксус 9% / Giấm 9%", quantity: 50, unit: "гр" },
+                    { ingredient: "Соус Сладкий Чили для курицы пф / Tương ớt ngọt cho gà pf", quantity: 100, unit: "гр" },
+                    { ingredient: "Сок лимонный / Nước chanh", quantity: 175, unit: "гр" },
+                    { ingredient: "Чеснок пф / Tỏi pf", quantity: 25, unit: "гр" },
+                    { ingredient: "Перец острый пф / Ớt cay pf", quantity: 25, unit: "гр" }
+                ],
+                "Соус Сот Сао пф / Sốt Xào pf": [
+                    { ingredient: "Соус Рыбный концентрат / Nước mắm cô đặc 40 độ", quantity: 350, unit: "гр" },
+                    { ingredient: "Сахар / Đường", quantity: 150, unit: "гр" },
+                    { ingredient: "Бульон куриный сухой / Bột nêm gà", quantity: 320, unit: "гр" },
+                    { ingredient: "Соус Устричный пф / Dầu hào pf", quantity: 200, unit: "гр" },
+                    { ingredient: "Усилитель вкуса / Mì chính", quantity: 280, unit: "гр" },
+                    { ingredient: "Масло кунжутное пф / Dầu vừng pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Вода / Nước", quantity: 2900, unit: "гр" },
+                    { ingredient: "Крахмал / Bột năng", quantity: 70, unit: "гр" }
+                ],
+                "Соус Рыбный для Нэм пф / Nước chấm nem pf": [
+                    { ingredient: "Сахар / Đường", quantity: 1300, unit: "гр" },
+                    { ingredient: "Соус Рыбный концентрат / Nước mắm cô đặc 40 độ", quantity: 1000, unit: "гр" },
+                    { ingredient: "Усилитель вкуса / Mì chính", quantity: 100, unit: "гр" },
+                    { ingredient: "Уксус 9% / Giấm 9%", quantity: 500, unit: "гр" },
+                    { ingredient: "Вода / Nước", quantity: 3000, unit: "гр" },
+                    { ingredient: "Морковь пф / Cà rốt pf", quantity: 200, unit: "гр" },
+                    { ingredient: "Чеснок пф / Tỏi pf", quantity: 60, unit: "гр" },
+                    { ingredient: "Перец острый пф / Ớt cay pf", quantity: 40, unit: "гр" }
+                ]
             }
         };
 
+        // Тексты для перевода
+        const translations = {
+            ru: {
+                mainTitle: "Тест на знание техкарт - Вьетнамская кухня",
+                modeTitle: "Выберите режим тестирования:",
+                randomMode: "Рандомные блюда (по 2 из каждого раздела)",
+                fullMode: "Полная проверка всех блюд",
+                checkBtn: "Проверить все ответы",
+                restartBtn: "Попробовать еще раз",
+                languageBtn: "Tiếng Việt",
+                correctAnswer: "Правильно: ",
+                incorrectAnswer: "Неправильно. Правильно: ",
+                dishPerfect: "Блюдо освоено",
+                dishFailed: "Блюдо требует изучения",
+                totalResult: "Общий результат",
+                dishesNeedAttention: "Блюда, требующие внимания",
+                excellent: "Отличное знание техкарт!",
+                good: "Хороший результат, но есть что подучить",
+                needWork: "Необходимо серьезно поработать над техкартами"
+            },
+            vi: {
+                mainTitle: "Kiểm tra định mức - Test kiến thức TK",
+                modeTitle: "Chọn chế độ kiểm tra:",
+                randomMode: "Món ăn ngẫu nhiên",
+                fullMode: "Kiểm tra tất cả món ăn",
+                checkBtn: "Kiểm tra tất cả câu trả lời",
+                restartBtn: "Thử lại",
+                languageBtn: "Русский",
+                correctAnswer: "Đúng: ",
+                incorrectAnswer: "Sai. Đúng là: ",
+                dishPerfect: "Món đã nắm vững",
+                dishFailed: "Món cần học thêm",
+                totalResult: "Kết quả tổng thể",
+                dishesNeedAttention: "Các món cần chú ý",
+                excellent: "Kiến thức định mức xuất sắc!",
+                good: "Kết quả tốt, nhưng cần học thêm",
+                needWork: "Cần học thuộc lại TK"
+            }
+        };
+
+        let currentLanguage = 'ru';
         let currentTestMode = '';
         let selectedDishes = {};
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ru' ? 'vi' : 'ru';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            document.getElementById('mainTitle').textContent = translations[currentLanguage].mainTitle;
+            document.getElementById('modeTitle').textContent = translations[currentLanguage].modeTitle;
+            document.getElementById('checkBtn').textContent = translations[currentLanguage].checkBtn;
+            document.getElementById('restartBtn1').textContent = translations[currentLanguage].restartBtn;
+            document.getElementById('restartBtn2').textContent = translations[currentLanguage].restartBtn;
+            document.querySelector('.language-btn').textContent = translations[currentLanguage].languageBtn;
+            
+            // Обновляем кнопки выбора режима
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            if (modeButtons.length >= 2) {
+                modeButtons[0].textContent = translations[currentLanguage].randomMode;
+                modeButtons[1].textContent = translations[currentLanguage].fullMode;
+            }
+        }
 
         function startTest(mode) {
             currentTestMode = mode;
@@ -478,6 +601,7 @@
                             <input type="text" id="${dishName.replace(/\s+/g, '_')}_${index}" 
                                    placeholder="0" data-correct="${item.quantity}">
                             <span class="unit">${item.unit}</span>
+                            <span class="correct-answer" id="correct_${dishName.replace(/\s+/g, '_')}_${index}" style="display: none;"></span>
                         `;
                         dishDiv.appendChild(ingDiv);
                     });
@@ -499,6 +623,11 @@
             let totalQuestions = 0;
             let failedDishes = [];
             
+            // Сначала скрываем все правильные ответы
+            document.querySelectorAll('.correct-answer').forEach(el => {
+                el.style.display = 'none';
+            });
+            
             for (const [category, dishes] of Object.entries(selectedDishes)) {
                 for (const [dishName, ingredients] of Object.entries(dishes)) {
                     let correctCount = 0;
@@ -507,6 +636,7 @@
                     ingredients.forEach((item, index) => {
                         totalQuestions++;
                         const input = document.getElementById(`${dishName.replace(/\s+/g, '_')}_${index}`);
+                        const correctAnswerEl = document.getElementById(`correct_${dishName.replace(/\s+/g, '_')}_${index}`);
                         const userValue = input.value.trim();
                         const correctValue = input.dataset.correct;
                         
@@ -518,16 +648,19 @@
                         } else {
                             input.parentElement.className = 'ingredient incorrect';
                             dishErrors++;
+                            // Показываем правильный ответ
+                            correctAnswerEl.textContent = `${translations[currentLanguage].incorrectAnswer} ${correctValue} ${item.unit}`;
+                            correctAnswerEl.style.display = 'inline';
                         }
                     });
                     
                     const resultDiv = document.getElementById(`result_${dishName.replace(/\s+/g, '_')}`);
                     
                     if (dishErrors <= 1) {
-                        resultDiv.textContent = `✅ Блюдо освоено (ошибок: ${dishErrors})`;
+                        resultDiv.textContent = `✅ ${translations[currentLanguage].dishPerfect} (ошибок: ${dishErrors})`;
                         resultDiv.className = 'dish-result dish-perfect';
                     } else {
-                        resultDiv.textContent = `❌ Блюдо требует изучения (ошибок: ${dishErrors})`;
+                        resultDiv.textContent = `❌ ${translations[currentLanguage].dishFailed} (ошибок: ${dishErrors})`;
                         resultDiv.className = 'dish-result dish-failed';
                         failedDishes.push(dishName);
                     }
@@ -537,18 +670,18 @@
             }
             
             const totalPercentage = (totalCorrect / totalQuestions) * 100;
-            let resultHTML = `<div>Общий результат: ${totalCorrect} из ${totalQuestions} (${totalPercentage.toFixed(1)}%)</div>`;
+            let resultHTML = `<div>${translations[currentLanguage].totalResult}: ${totalCorrect} из ${totalQuestions} (${totalPercentage.toFixed(1)}%)</div>`;
             
             if (failedDishes.length > 0) {
-                resultHTML += `<div style="margin-top: 10px; color: #dc3545;">Блюда, требующие внимания: ${failedDishes.join(', ')}</div>`;
+                resultHTML += `<div style="margin-top: 10px; color: #dc3545;">${translations[currentLanguage].dishesNeedAttention}: ${failedDishes.join(', ')}</div>`;
             }
             
             if (totalPercentage >= 90) {
-                resultHTML += `<div style="color: #28a745; margin-top: 10px;">Отличное знание техкарт!</div>`;
+                resultHTML += `<div style="color: #28a745; margin-top: 10px;">${translations[currentLanguage].excellent}</div>`;
             } else if (totalPercentage >= 70) {
-                resultHTML += `<div style="color: #ffc107; margin-top: 10px;">Хороший результат, но есть что подучить</div>`;
+                resultHTML += `<div style="color: #ffc107; margin-top: 10px;">${translations[currentLanguage].good}</div>`;
             } else {
-                resultHTML += `<div style="color: #dc3545; margin-top: 10px;">Необходимо серьезно поработать над техкартами</div>`;
+                resultHTML += `<div style="color: #dc3545; margin-top: 10px;">${translations[currentLanguage].needWork}</div>`;
             }
             
             document.getElementById('totalResult').innerHTML = resultHTML;
@@ -573,11 +706,16 @@
                 result.textContent = '';
                 result.className = 'dish-result';
             });
+            
+            // Скрываем правильные ответы
+            document.querySelectorAll('.correct-answer').forEach(el => {
+                el.style.display = 'none';
+            });
         }
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            // Страница уже показывает выбор режима
+            updateLanguage();
         });
     </script>
 </body>
