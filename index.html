@@ -1,1 +1,584 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на знание техкарт - Вьетнамская кухня</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: #333333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+        
+        h2 {
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #3498db;
+            color: #2c3e50;
+        }
+        
+        h3 {
+            margin: 20px 0 10px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .mode-selection {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .mode-btn {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 18px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .dish {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        
+        .ingredient {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .ingredient label {
+            width: 400px;
+            display: inline-block;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 80px;
+            padding: 6px;
+            margin: 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .unit {
+            width: 50px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .correct {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .result-panel {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        button {
+            padding: 12px 25px;
+            margin: 10px 0;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .total-score {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .dish-result {
+            margin-top: 10px;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .dish-perfect {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .dish-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+        }
+        
+        .restart-btn {
+            background-color: #e74c3c;
+            display: block;
+            margin: 20px auto;
+        }
+        
+        .restart-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        @media (max-width: 768px) {
+            .ingredient {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .ingredient label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            input {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест на знание техкарт - Вьетнамская кухня</h1>
+    
+    <div id="modeSelection" class="mode-selection">
+        <h2>Выберите режим тестирования:</h2>
+        <button class="mode-btn" onclick="startTest('random')">Рандомные блюда (по 2 из каждого раздела)</button>
+        <button class="mode-btn" onclick="startTest('full')">Полная проверка всех блюд</button>
+    </div>
+    
+    <div id="testContainer" class="hidden">
+        <div class="result-panel">
+            <button onclick="checkAll()">Проверить все ответы</button>
+            <div id="totalResult" class="total-score"></div>
+        </div>
+        
+        <div id="dishesContainer"></div>
+        
+        <button class="restart-btn" onclick="restartTest()">Попробовать еще раз</button>
+    </div>
 
+    <script>
+        const techCards = {
+            "Супы": {
+                "Суп Фо Бо / Phở Bò (800)": [
+                    { ingredient: "Лапша Фо свежая пф / Phở tươi pf", quantity: 150, unit: "гр" },
+                    { ingredient: "Говядина окорок пф / Mông bò pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Говядина голень отварная пф / Bắp bò luộc pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Зелень для Фо пф / Hành phở pf", quantity: 25, unit: "гр" },
+                    { ingredient: "Имбирь пф / Gừng pf", quantity: 2, unit: "гр" },
+                    { ingredient: "Бульон Фо пф / Nước dùng phở pf", quantity: 500, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Лайм / Chanh xanh", quantity: 15, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 1, unit: "гр" },
+                    { ingredient: "Мята / Bạc hà", quantity: 1, unit: "гр" },
+                    { ingredient: "Перец острый пф / Ớt cay pf", quantity: 2, unit: "гр" }
+                ],
+                "Суп Фо Га / Phở Gà (800)": [
+                    { ingredient: "Лапша Фо свежая пф / Phở tươi pf", quantity: 150, unit: "гр" },
+                    { ingredient: "Куриное бедро жареное пф / Đùi gà xào pf", quantity: 100, unit: "гр" },
+                    { ingredient: "Зелень для Фо пф / Hành phở pf", quantity: 25, unit: "гр" },
+                    { ingredient: "Бульон Фо пф / Nước dùng phở pf", quantity: 500, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Лайм / Chanh xanh", quantity: 15, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 1, unit: "гр" },
+                    { ingredient: "Мята / Bạc hà", quantity: 1, unit: "гр" },
+                    { ingredient: "Перец острый пф / Ớt cay pf", quantity: 2, unit: "гр" }
+                ],
+                "Суп Фо Тай Лан / Phở Tái Lăn (800)": [
+                    { ingredient: "Лапша Фо свежая пф / Phở tươi pf", quantity: 150, unit: "гр" },
+                    { ingredient: "Масло растительное / Dầu thực vật", quantity: 10, unit: "гр" },
+                    { ingredient: "Говядина Фо Тай Лан пф / Mông bò Phở Tái Lăn pf", quantity: 100, unit: "гр" },
+                    { ingredient: "Зелень для Фо пф / Hành phở pf", quantity: 25, unit: "гр" },
+                    { ingredient: "Имбирь пф / Gừng pf", quantity: 2, unit: "гр" },
+                    { ingredient: "Бульон Фо пф / Nước dùng phở pf", quantity: 500, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Лайм / Chanh xanh", quantity: 15, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 1, unit: "гр" },
+                    { ingredient: "Мята / Bạc hà", quantity: 1, unit: "гр" },
+                    { ingredient: "Перец острый пф / Ớt cay pf", quantity: 2, unit: "гр" }
+                ],
+                "Суп Том Ям / Tom Yum (480/130)": [
+                    { ingredient: "Бульон Том Ям пф / Nước dùng Tom Yum pf", quantity: 330, unit: "гр" },
+                    { ingredient: "Начинка Том Ям пф / Nhân Tom Yum pf", quantity: 117, unit: "гр" },
+                    { ingredient: "Мидии пф / Vẹm pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Грибы Шампиньоны пф / Nấm trắng pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Молоко кокосовое / Sữa dừa", quantity: 30, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 1, unit: "гр" },
+                    { ingredient: "Рис вареный пф / Cơm pf", quantity: 130, unit: "гр" }
+                ],
+                "Суп Бун Том / Bún Tôm (550/20)": [
+                    { ingredient: "Бульон Том Ям пф / Nước dùng Tom Yum pf", quantity: 350, unit: "гр" },
+                    { ingredient: "Помидоры пф / Cà chua pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Креветки 26/30 с хвостом пф / Tôm 26/30 có đuôi pf", quantity: 75, unit: "гр" },
+                    { ingredient: "Лапша Бун пф / Bún tươi pf", quantity: 120, unit: "гр" },
+                    { ingredient: "Зелень для Фо пф / Hành phở pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 20, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 1, unit: "гр" }
+                ]
+            },
+            "Горячее": {
+                "Лапша Мьен Сао Бо / Miến Xào Bò (380)": [
+                    { ingredient: "Масло растительное / Dầu thực vật", quantity: 20, unit: "гр" },
+                    { ingredient: "Яйцо куриное / Trứng gà", quantity: 1, unit: "шт" },
+                    { ingredient: "Вермишель пф / Miến pf", quantity: 130, unit: "гр" },
+                    { ingredient: "Говядина окорок обжаренный пф / Mông bò xào pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Овощи для горячего пф / Rau xào pf", quantity: 90, unit: "гр" },
+                    { ingredient: "Соус Соевый / Xì dầu", quantity: 5, unit: "гр" },
+                    { ingredient: "Соус Сот Сао пф / Sốt xào pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Масло красное пф / Dầu điều đỏ pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Лук зеленый пф / Hành lá pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Кунжут / Vừng", quantity: 2, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" }
+                ],
+                "Лапша Мьен Сао Га / Miến Xào Gà (380)": [
+                    { ingredient: "Масло растительное / Dầu thực vật", quantity: 20, unit: "гр" },
+                    { ingredient: "Яйцо куриное / Trứng gà", quantity: 1, unit: "шт" },
+                    { ingredient: "Вермишель пф / Miến pf", quantity: 130, unit: "гр" },
+                    { ingredient: "Куриное бедро жареное пф / Đùi gà xào pf", quantity: 80, unit: "гр" },
+                    { ingredient: "Овощи для горячего пф / Rau xào pf", quantity: 90, unit: "гр" },
+                    { ingredient: "Соус Соевый / Xì dầu", quantity: 5, unit: "гр" },
+                    { ingredient: "Соус Сот Сао пф / Sốt xào pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Масло красное пф / Dầu điều đỏ pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Лук зеленый пф / Hành lá pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Кунжут / Vừng", quantity: 2, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" }
+                ],
+                "Лапша Мьен Сао Хай Шан / Miến Xào Hải Sản (380)": [
+                    { ingredient: "Масло растительное / Dầu thực vật", quantity: 20, unit: "гр" },
+                    { ingredient: "Яйцо куриное / Trứng gà", quantity: 1, unit: "шт" },
+                    { ingredient: "Вермишель пф / Miến pf", quantity: 130, unit: "гр" },
+                    { ingredient: "Начинка из морепродуктов для лапши пф / Nhân Hải Sản pf", quantity: 100, unit: "гр" },
+                    { ingredient: "Овощи для горячего пф / Rau xào pf", quantity: 90, unit: "гр" },
+                    { ingredient: "Соус Соевый / Xì dầu", quantity: 5, unit: "гр" },
+                    { ingredient: "Соус Сот Сао пф / Sốt xào pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Масло красное пф / Dầu điều đỏ pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Лук зеленый пф / Hành lá pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Кунжут / Vừng", quantity: 2, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" }
+                ],
+                "Лапша Мьен Сао Чаи / Miến Xào Chay (300)": [
+                    { ingredient: "Овощи для горячего пф / Rau xào pf", quantity: 90, unit: "гр" },
+                    { ingredient: "Вода / Nước", quantity: 80, unit: "гр" },
+                    { ingredient: "Грибы черные пф / Mộc nhĩ pf", quantity: 40, unit: "гр" },
+                    { ingredient: "Вермишель пф / Miến pf", quantity: 130, unit: "гр" },
+                    { ingredient: "Соус Соевый / Xì dầu", quantity: 10, unit: "гр" },
+                    { ingredient: "Специя Хай Чау / Hải Châu", quantity: 2, unit: "гр" },
+                    { ingredient: "Усилитель вкуса / Mì chính", quantity: 2, unit: "гр" },
+                    { ingredient: "Масло красное пф / Dầu điều đỏ pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 40, unit: "гр" },
+                    { ingredient: "Лук зеленый пф / Hành lá pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Кунжут / Vừng", quantity: 2, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" }
+                ],
+                "Рис Ком Ранг Бо / Cơm Rang Bò (310)": [
+                    { ingredient: "Масло растительное / Dầu thực vật", quantity: 10, unit: "гр" },
+                    { ingredient: "Яйцо куриное / Trứng gà", quantity: 1, unit: "шт" },
+                    { ingredient: "Говядина окорок обжаренный пф / Mông bò xào pf", quantity: 60, unit: "гр" },
+                    { ingredient: "Рис Ком Ранг пф / Cơm rang sẵn pf", quantity: 180, unit: "гр" },
+                    { ingredient: "Морковь отварная пф / Cà rốt luộc pf", quantity: 20, unit: "гр" },
+                    { ingredient: "Кукуруза консервированная пф / Ngô đóng hộp pf", quantity: 20, unit: "гр" },
+                    { ingredient: "Масло сливочное 82% / Bơ 82%", quantity: 3, unit: "гр" },
+                    { ingredient: "Лук зеленый пф / Hành lá pf", quantity: 5, unit: "гр" },
+                    { ingredient: "Перец черный / Hạt tiêu xay", quantity: 0.5, unit: "гр" },
+                    { ingredient: "Лук жареный / Hành khô", quantity: 5, unit: "гр" }
+                ]
+            },
+            "Салаты": {
+                "Салат Ном Бо / Nộm Bò (230)": [
+                    { ingredient: "Огурцы без семян пф / Dưa chuột bỏ ruột pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Помидоры без семян пф / Cà chua không ruột pf", quantity: 40, unit: "гр" },
+                    { ingredient: "Морковь пф / Cà rốt pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Лук красный пф / Hành tím pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 20, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 3, unit: "гр" },
+                    { ingredient: "Говядина окорок обжаренный пф / Mông bò xào pf", quantity: 40, unit: "гр" },
+                    { ingredient: "Соус Кисло-сладкий для салата пф / Nước sốt chua ngọt cho salad pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Арахис жареный пф / Lạc rang pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Лук жареный / Hành khô", quantity: 5, unit: "гр" }
+                ],
+                "Салат Ном Том / Nộm Tôm (230)": [
+                    { ingredient: "Огурцы без семян пф / Dưa chuột không ruột pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Помидоры без семян пф / Cà chua không ruột pf", quantity: 40, unit: "гр" },
+                    { ingredient: "Морковь пф / Cà rốt pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Лук красный пф / Hành tím pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Бобы проростки пф / Giá đỗ pf", quantity: 20, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 3, unit: "гр" },
+                    { ingredient: "Креветки вареные пф / Tôm luộc pf", quantity: 40, unit: "гр" },
+                    { ingredient: "Соус Кисло-сладкий для салата пф / Nước sốt chua ngọt cho salad pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Арахис жареный пф / Lạc rang pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Лук жареный / Hành khô", quantity: 5, unit: "гр" }
+                ]
+            },
+            "Закуски": {
+                "Нэм Га / Nem Gà (3 шт/150/30)": [
+                    { ingredient: "Рисовая бумага квадратная / Bánh tráng nem vuông", quantity: 18, unit: "гр" },
+                    { ingredient: "Вода + яичный белок для Нэм пф / Nước cuốn nem pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Начинка для Нэм пф / Nhân nem trộn sẵn pf", quantity: 150, unit: "гр" },
+                    { ingredient: "Масло фритюрное / Dầu chiên", quantity: 36, unit: "гр" },
+                    { ingredient: "Соус Рыбный для Нэм пф / Nước chấm nem pf", quantity: 30, unit: "гр" }
+                ],
+                "Гой Том / Gỏi Tôm (2 шт/190/30)": [
+                    { ingredient: "Рисовая бумага круглая / Bánh tráng tròn gỏi", quantity: 20, unit: "гр" },
+                    { ingredient: "Салат Айсберг пф / Salad tròn pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Огурцы без семян пф / Dưa chuột bỏ ruột pf", quantity: 20, unit: "гр" },
+                    { ingredient: "Манго пф / Xoài pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 5, unit: "гр" },
+                    { ingredient: "Лапша Бун пф / Bún tươi pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Морковь пф / Cà rốt pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Креветки вареные пф / Tôm luộc pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Соус Рыбный для Нэм пф / Nước chấm nem pf", quantity: 30, unit: "гр" }
+                ],
+                "Гой Вит / Gỏi Vịt (2 шт/190/30)": [
+                    { ingredient: "Рисовая бумага круглая / Bánh tráng tròn gỏi", quantity: 20, unit: "гр" },
+                    { ingredient: "Салат Айсберг пф / Salad tròn pf", quantity: 10, unit: "гр" },
+                    { ingredient: "Огурцы без семян пф / Dưa chuột không ruột pf", quantity: 20, unit: "гр" },
+                    { ingredient: "Манго пф / Xoài pf", quantity: 30, unit: "гр" },
+                    { ingredient: "Кинза пф / Rau mùi pf", quantity: 5, unit: "гр" },
+                    { ingredient: "Лапша Бун пф / Bún tươi pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Мята пф / Bạc hà pf", quantity: 2, unit: "гр" },
+                    { ingredient: "Морковь пф / Cà rốt pf", quantity: 15, unit: "гр" },
+                    { ingredient: "Утка жареная пф / Vịt quay pf", quantity: 50, unit: "гр" },
+                    { ingredient: "Соус Перечный для утки пф / Sốt tiêu cho vịt pf", quantity: 30, unit: "гр" }
+                ]
+            }
+        };
+
+        let currentTestMode = '';
+        let selectedDishes = {};
+
+        function startTest(mode) {
+            currentTestMode = mode;
+            document.getElementById('modeSelection').classList.add('hidden');
+            document.getElementById('testContainer').classList.remove('hidden');
+            
+            if (mode === 'random') {
+                selectRandomDishes();
+            } else {
+                selectedDishes = JSON.parse(JSON.stringify(techCards)); // Deep copy
+            }
+            
+            createTest();
+        }
+
+        function selectRandomDishes() {
+            selectedDishes = {};
+            
+            // Для каждого раздела выбираем 2 случайных блюда
+            for (const [category, dishes] of Object.entries(techCards)) {
+                const dishKeys = Object.keys(dishes);
+                const randomDishes = {};
+                
+                // Выбираем 2 случайных блюда (или меньше, если блюд меньше 2)
+                const count = Math.min(2, dishKeys.length);
+                const selectedKeys = [];
+                
+                while (selectedKeys.length < count) {
+                    const randomIndex = Math.floor(Math.random() * dishKeys.length);
+                    const randomKey = dishKeys[randomIndex];
+                    
+                    if (!selectedKeys.includes(randomKey)) {
+                        selectedKeys.push(randomKey);
+                        randomDishes[randomKey] = dishes[randomKey];
+                    }
+                }
+                
+                selectedDishes[category] = randomDishes;
+            }
+        }
+
+        function createTest() {
+            const container = document.getElementById('dishesContainer');
+            container.innerHTML = '';
+            
+            for (const [category, dishes] of Object.entries(selectedDishes)) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const categoryTitle = document.createElement('h2');
+                categoryTitle.textContent = category;
+                categoryDiv.appendChild(categoryTitle);
+                
+                for (const [dishName, ingredients] of Object.entries(dishes)) {
+                    const dishDiv = document.createElement('div');
+                    dishDiv.className = 'dish';
+                    dishDiv.innerHTML = `<h3>${dishName}</h3>`;
+                    
+                    ingredients.forEach((item, index) => {
+                        const ingDiv = document.createElement('div');
+                        ingDiv.className = 'ingredient';
+                        ingDiv.innerHTML = `
+                            <label>${item.ingredient}</label>
+                            <input type="text" id="${dishName.replace(/\s+/g, '_')}_${index}" 
+                                   placeholder="0" data-correct="${item.quantity}">
+                            <span class="unit">${item.unit}</span>
+                        `;
+                        dishDiv.appendChild(ingDiv);
+                    });
+                    
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'dish-result';
+                    resultDiv.id = `result_${dishName.replace(/\s+/g, '_')}`;
+                    dishDiv.appendChild(resultDiv);
+                    
+                    categoryDiv.appendChild(dishDiv);
+                }
+                
+                container.appendChild(categoryDiv);
+            }
+        }
+
+        function checkAll() {
+            let totalCorrect = 0;
+            let totalQuestions = 0;
+            let failedDishes = [];
+            
+            for (const [category, dishes] of Object.entries(selectedDishes)) {
+                for (const [dishName, ingredients] of Object.entries(dishes)) {
+                    let correctCount = 0;
+                    let dishErrors = 0;
+                    
+                    ingredients.forEach((item, index) => {
+                        totalQuestions++;
+                        const input = document.getElementById(`${dishName.replace(/\s+/g, '_')}_${index}`);
+                        const userValue = input.value.trim();
+                        const correctValue = input.dataset.correct;
+                        
+                        if (userValue === correctValue || 
+                            (userValue === correctValue.toString()) ||
+                            (userValue === parseFloat(correctValue).toString())) {
+                            input.parentElement.className = 'ingredient correct';
+                            correctCount++;
+                        } else {
+                            input.parentElement.className = 'ingredient incorrect';
+                            dishErrors++;
+                        }
+                    });
+                    
+                    const resultDiv = document.getElementById(`result_${dishName.replace(/\s+/g, '_')}`);
+                    
+                    if (dishErrors <= 1) {
+                        resultDiv.textContent = `✅ Блюдо освоено (ошибок: ${dishErrors})`;
+                        resultDiv.className = 'dish-result dish-perfect';
+                    } else {
+                        resultDiv.textContent = `❌ Блюдо требует изучения (ошибок: ${dishErrors})`;
+                        resultDiv.className = 'dish-result dish-failed';
+                        failedDishes.push(dishName);
+                    }
+                    
+                    totalCorrect += (ingredients.length - dishErrors);
+                }
+            }
+            
+            const totalPercentage = (totalCorrect / totalQuestions) * 100;
+            let resultHTML = `<div>Общий результат: ${totalCorrect} из ${totalQuestions} (${totalPercentage.toFixed(1)}%)</div>`;
+            
+            if (failedDishes.length > 0) {
+                resultHTML += `<div style="margin-top: 10px; color: #dc3545;">Блюда, требующие внимания: ${failedDishes.join(', ')}</div>`;
+            }
+            
+            if (totalPercentage >= 90) {
+                resultHTML += `<div style="color: #28a745; margin-top: 10px;">Отличное знание техкарт!</div>`;
+            } else if (totalPercentage >= 70) {
+                resultHTML += `<div style="color: #ffc107; margin-top: 10px;">Хороший результат, но есть что подучить</div>`;
+            } else {
+                resultHTML += `<div style="color: #dc3545; margin-top: 10px;">Необходимо серьезно поработать над техкартами</div>`;
+            }
+            
+            document.getElementById('totalResult').innerHTML = resultHTML;
+        }
+
+        function restartTest() {
+            // Очищаем все поля и скрываем тест
+            document.getElementById('testContainer').classList.add('hidden');
+            document.getElementById('modeSelection').classList.remove('hidden');
+            document.getElementById('totalResult').innerHTML = '';
+            
+            // Сбрасываем все инпуты
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.parentElement.className = 'ingredient';
+            });
+            
+            // Сбрасываем результаты блюд
+            const results = document.querySelectorAll('.dish-result');
+            results.forEach(result => {
+                result.textContent = '';
+                result.className = 'dish-result';
+            });
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Страница уже показывает выбор режима
+        });
+    </script>
+</body>
+</html>
