@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiểm tra định mức - Test kiến thức TK/title>
+    <title>Kiểm tra định mức - Test kiến thức TK</title>
     <style>
         * {
             margin: 0;
@@ -19,6 +19,9 @@
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 40px;
         }
         
         h1 {
@@ -200,6 +203,37 @@
             z-index: 1000;
         }
         
+        .close-results-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .close-results-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #666;
+            font-size: 12px;
+            z-index: 999;
+        }
+        
         @media (max-width: 768px) {
             .ingredient {
                 flex-direction: column;
@@ -221,13 +255,30 @@
                 right: auto;
                 margin: 10px 0;
             }
+            
+            .close-results-btn {
+                top: 10px;
+                left: 10px;
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+            
+            .footer {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                text-align: center;
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <button class="language-btn" onclick="toggleLanguage()">Tiếng Việt</button>
+    <button class="close-results-btn" onclick="closeResults()" id="closeResultsBtn">X</button>
     
-    <h1 id="mainTitle">Тест на знание техкарт - Вьетнамская кухня</h1>
+    <h1 id="mainTitle">Тест на знание техкарт - Phobo</h1>
     
     <div id="modeSelection" class="mode-selection">
         <h2 id="modeTitle">Выберите режим тестирования:</h2>
@@ -245,6 +296,10 @@
         <div id="dishesContainer"></div>
         
         <button class="restart-btn" onclick="restartTest()" id="restartBtn2">Попробовать еще раз</button>
+    </div>
+
+    <div class="footer">
+        Last update 08.10.2025 by @bachleeee
     </div>
 
     <script>
@@ -666,12 +721,11 @@
             }
         };
 
-        // Тексты для перевода
         const translations = {
             ru: {
-                mainTitle: "Тест на знание техкарт - Phobo",
+                mainTitle: "Тест на знание техкарт - Вьетнамская кухня",
                 modeTitle: "Выберите режим тестирования:",
-                randomMode: "Рандомные блюда (по 2 из каждого раздела)",
+                randomMode: "Рандомные блюда",
                 fullMode: "Полная проверка всех блюд",
                 checkBtn: "Проверить все ответы",
                 restartBtn: "Попробовать еще раз",
@@ -723,7 +777,6 @@
             document.getElementById('restartBtn2').textContent = translations[currentLanguage].restartBtn;
             document.querySelector('.language-btn').textContent = translations[currentLanguage].languageBtn;
             
-            // Обновляем кнопки выбора режима
             const modeButtons = document.querySelectorAll('.mode-btn');
             if (modeButtons.length >= 2) {
                 modeButtons[0].textContent = translations[currentLanguage].randomMode;
@@ -739,7 +792,7 @@
             if (mode === 'random') {
                 selectRandomDishes();
             } else {
-                selectedDishes = JSON.parse(JSON.stringify(techCards)); // Deep copy
+                selectedDishes = JSON.parse(JSON.stringify(techCards));
             }
             
             createTest();
@@ -748,12 +801,10 @@
         function selectRandomDishes() {
             selectedDishes = {};
             
-            // Для каждого раздела выбираем 2 случайных блюда
             for (const [category, dishes] of Object.entries(techCards)) {
                 const dishKeys = Object.keys(dishes);
                 const randomDishes = {};
                 
-                // Выбираем 2 случайных блюда (или меньше, если блюд меньше 2)
                 const count = Math.min(2, dishKeys.length);
                 const selectedKeys = [];
                 
@@ -818,7 +869,6 @@
             let totalQuestions = 0;
             let failedDishes = [];
             
-            // Сначала скрываем все правильные ответы
             document.querySelectorAll('.correct-answer').forEach(el => {
                 el.style.display = 'none';
             });
@@ -843,7 +893,6 @@
                         } else {
                             input.parentElement.className = 'ingredient incorrect';
                             dishErrors++;
-                            // Показываем правильный ответ
                             correctAnswerEl.textContent = `${translations[currentLanguage].incorrectAnswer} ${correctValue} ${item.unit}`;
                             correctAnswerEl.style.display = 'inline';
                         }
@@ -880,35 +929,46 @@
             }
             
             document.getElementById('totalResult').innerHTML = resultHTML;
+            document.getElementById('closeResultsBtn').style.display = 'block';
+        }
+
+        function closeResults() {
+            const resultPanel = document.querySelector('.result-panel');
+            if (resultPanel) {
+                resultPanel.style.display = 'none';
+            }
+            document.getElementById('closeResultsBtn').style.display = 'none';
         }
 
         function restartTest() {
-            // Очищаем все поля и скрываем тест
             document.getElementById('testContainer').classList.add('hidden');
             document.getElementById('modeSelection').classList.remove('hidden');
             document.getElementById('totalResult').innerHTML = '';
             
-            // Сбрасываем все инпуты
             const inputs = document.querySelectorAll('input');
             inputs.forEach(input => {
                 input.value = '';
                 input.parentElement.className = 'ingredient';
             });
             
-            // Сбрасываем результаты блюд
             const results = document.querySelectorAll('.dish-result');
             results.forEach(result => {
                 result.textContent = '';
                 result.className = 'dish-result';
             });
             
-            // Скрываем правильные ответы
             document.querySelectorAll('.correct-answer').forEach(el => {
                 el.style.display = 'none';
             });
+            
+            document.getElementById('closeResultsBtn').style.display = 'none';
+            
+            const resultPanel = document.querySelector('.result-panel');
+            if (resultPanel) {
+                resultPanel.style.display = 'block';
+            }
         }
 
-        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
             updateLanguage();
         });
