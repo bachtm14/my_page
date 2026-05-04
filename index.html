@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PhoBo · ТК</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f5f1ea; --bg-elev:#fff; --ink:#1a1614; --ink-soft:#5c544f; --ink-mute:#8a827c;
+    --accent:#b9442b; --accent-dark:#8e3220; --accent-soft:#f5e3dd;
+    --good:#2d6a4f; --good-soft:#d8e8df; --bad:#b53838; --bad-soft:#f4dada;
+    --warn:#c98a2b; --warn-soft:#f5e6cf;
+    --line:#e6dfd5; --line-strong:#d2c8b8;
+    --shadow:0 1px 3px rgba(26,22,20,.06),0 4px 12px rgba(26,22,20,.04);
+    --shadow-lg:0 4px 12px rgba(26,22,20,.08),0 16px 40px rgba(26,22,20,.08);
+    --radius:10px; --radius-lg:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+  h1{font-size:2.2rem;line-height:1.15}
+  h2{font-size:1.6rem;line-height:1.2}
+  h3{font-size:1.25rem;line-height:1.3}
+  button{font:inherit;cursor:pointer;border:0;background:0;color:inherit}
+  input,select{font:inherit;color:inherit}
+  a{color:var(--accent);text-decoration:none}
+  .hidden{display:none!important}
+  #app{min-height:100vh;display:flex;flex-direction:column}
+  .topbar{background:var(--bg-elev);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;gap:14px}
+  .topbar-brand{font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+  .topbar-brand::before{content:'◆';color:var(--accent)}
+  .topbar-right{display:flex;align-items:center;gap:14px;font-size:.9rem;color:var(--ink-soft)}
+  .topbar-right .name{font-weight:600;color:var(--ink)}
+  .lang-toggle{display:flex;background:var(--bg);border:1px solid var(--line-strong);border-radius:8px;overflow:hidden}
+  .lang-toggle button{padding:5px 11px;font-size:.78rem;font-weight:600;letter-spacing:.05em;transition:.15s;color:var(--ink-mute)}
+  .lang-toggle button.active{background:var(--accent);color:#fff}
+  .logout-btn{color:var(--ink-mute);font-size:.85rem;padding:4px 10px;border-radius:6px;transition:.15s}
+  .logout-btn:hover{background:var(--line);color:var(--ink)}
+  .main{flex:1;padding:32px 22px 60px;max-width:1100px;width:100%;margin:0 auto}
+  .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 20% 10%,#f5e3dd 0%,transparent 40%),radial-gradient(circle at 80% 90%,#eaddc7 0%,transparent 50%),var(--bg)}
+  .login-card{background:var(--bg-elev);border-radius:var(--radius-lg);padding:40px 36px;width:100%;max-width:420px;box-shadow:var(--shadow-lg);border:1px solid var(--line);position:relative}
+  .login-lang{position:absolute;top:18px;right:18px}
+  .login-logo{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;letter-spacing:-.03em;margin-bottom:4px;display:flex;align-items:center;gap:12px}
+  .login-logo::before{content:'◆';color:var(--accent);font-size:1.6rem}
+  .login-sub{color:var(--ink-soft);font-size:.95rem;margin-bottom:32px}
+  .form-group{margin-bottom:16px}
+  .form-group label{display:block;font-size:.85rem;color:var(--ink-soft);margin-bottom:6px;font-weight:500}
+  .form-group input,.form-group select{width:100%;padding:12px 14px;border:1.5px solid var(--line-strong);border-radius:var(--radius);background:var(--bg);transition:.15s}
+  .form-group input:focus,.form-group select:focus{outline:0;border-color:var(--accent);background:var(--bg-elev)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:var(--radius);font-weight:600;font-size:.95rem;transition:.15s;border:1.5px solid transparent}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-dark)}
+  .btn-primary:disabled{background:var(--ink-mute);cursor:not-allowed}
+  .btn-ghost{color:var(--ink);border-color:var(--line-strong);background:0}
+  .btn-ghost:hover{background:var(--bg-elev);border-color:var(--ink)}
+  .btn-block{width:100%}
+  .btn-lg{padding:14px 28px;font-size:1rem}
+  .btn-sm{padding:8px 14px;font-size:.85rem}
+  .login-error{background:var(--bad-soft);color:var(--bad);padding:10px 14px;border-radius:var(--radius);font-size:.88rem;margin-bottom:16px;display:none}
+  .login-error.show{display:block}
+  .login-hint{margin-top:22px;padding-top:22px;border-top:1px solid var(--line);font-size:.85rem;color:var(--ink-mute);text-align:center}
+  .pageheader{margin-bottom:28px}
+  .pageheader .crumb{font-size:.82rem;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+  .pageheader p{color:var(--ink-soft);margin-top:6px}
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:32px}
+  .stat-card{background:var(--bg-elev);padding:18px 20px;border-radius:var(--radius);border:1px solid var(--line)}
+  .stat-card .label{font-size:.78rem;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+  .stat-card .value{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600}
+  .stat-card .value .small{font-size:.9rem;color:var(--ink-mute);font-weight:400}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:28px 0 14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .section-title:first-of-type{margin-top:0}
+  .section-title h3{font-size:1.15rem}
+  .section-desc{color:var(--ink-soft);font-size:.9rem;margin-bottom:14px}
+  .dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .dept-card{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:20px;cursor:pointer;transition:.18s;display:flex;flex-direction:column;justify-content:space-between;min-height:140px;position:relative;overflow:hidden;text-align:left;width:100%}
+  .dept-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:.18s}
+  .dept-card:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .dept-card:hover::before{transform:scaleY(1)}
+  .dept-card .dept-name{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:600;margin-bottom:6px}
+  .dept-card .dept-meta{font-size:.85rem;color:var(--ink-soft)}
+  .dept-card .dept-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+  .dept-card .dept-arrow{color:var(--ink-mute);font-size:1.2rem}
+  .badge{font-size:.75rem;padding:3px 8px;border-radius:12px;font-weight:500;display:inline-block}
+  .badge-good{background:var(--good-soft);color:var(--good)}
+  .badge-bad{background:var(--bad-soft);color:var(--bad)}
+  .badge-neutral{background:var(--line);color:var(--ink-soft)}
+  .badge-warn{background:var(--warn-soft);color:var(--warn)}
+  .mode-picker{max-width:600px;margin:0 auto}
+  .mode-card{background:var(--bg-elev);border:1.5px solid var(--line);border-radius:var(--radius);padding:24px;cursor:pointer;display:flex;align-items:flex-start;gap:18px;transition:.15s;margin-bottom:14px;width:100%;text-align:left}
+  .mode-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .mode-card .mode-icon{width:46px;height:46px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;font-family:'Fraunces',serif;font-weight:700}
+  .mode-card.attestation .mode-icon{background:var(--warn-soft);color:var(--warn)}
+  .mode-card .mode-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;margin-bottom:4px}
+  .mode-card .mode-desc{font-size:.9rem;color:var(--ink-soft)}
+  .test-card{background:var(--bg-elev);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow);border:1px solid var(--line);max-width:720px;margin:0 auto}
+  .test-progress{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .test-progress .bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+  .test-progress .bar-fill{height:100%;background:var(--accent);transition:.3s ease}
+  .test-progress .num{font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;min-width:50px;text-align:right}
+  .question-meta{font-size:.78rem;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+  .question-text{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:600;line-height:1.3;margin-bottom:8px}
+  .question-text-sub{color:var(--ink-mute);font-size:.95rem;margin-bottom:20px;font-style:italic}
+  .options-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+  .option{padding:14px 18px;border:1.5px solid var(--line-strong);border-radius:var(--radius);background:var(--bg);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:12px;text-align:left;width:100%}
+  .option:hover{border-color:var(--ink);background:var(--bg-elev)}
+  .option.selected{border-color:var(--accent);background:var(--accent-soft)}
+  .option .opt-letter{width:28px;height:28px;border-radius:50%;background:var(--bg-elev);border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem;flex-shrink:0;transition:.15s}
+  .option.selected .opt-letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .option .opt-text{flex:1}
+  .opt-text-sub{font-size:.78rem;color:var(--ink-mute);margin-top:2px;font-style:italic}
+  .test-actions{display:flex;gap:10px;justify-content:space-between}
+  .att-card{background:var(--bg-elev);border-radius:var(--radius-lg);padding:28px;border:1px solid var(--line);max-width:760px;margin:0 auto}
+  .att-dish-head{padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .att-dish-head .dish-name{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600}
+  .att-dish-head .dish-name-sub{color:var(--ink-mute);font-style:italic;margin-top:4px}
+  .att-dish-photo{width:100%;max-height:280px;object-fit:cover;border-radius:var(--radius);margin-bottom:18px;border:1px solid var(--line)}
+  .att-instruction{background:var(--warn-soft);border-left:4px solid var(--warn);padding:12px 16px;border-radius:8px;margin-bottom:20px;font-size:.9rem}
+  .att-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .att-row{display:grid;grid-template-columns:1fr 110px 36px;gap:8px;align-items:center}
+  .att-row input{padding:10px 12px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--bg);transition:.15s;width:100%}
+  .att-row input:focus{outline:0;border-color:var(--accent);background:var(--bg-elev)}
+  .att-row input.gr{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .att-row .del-btn{background:var(--bad-soft);color:var(--bad);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;transition:.15s}
+  .att-row .del-btn:hover{background:var(--bad);color:#fff}
+  .att-add-row{margin-top:6px;background:var(--bg);color:var(--ink-soft);border:1.5px dashed var(--line-strong);padding:10px;border-radius:8px;width:100%;font-weight:500;transition:.15s}
+  .att-add-row:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .att-grade-result{margin-bottom:18px}
+  .att-grade-row{padding:10px 14px;border-radius:8px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:.92rem;border:1px solid var(--line)}
+  .att-grade-row.correct{background:var(--good-soft);border-color:var(--good)}
+  .att-grade-row.wrong-gram{background:var(--warn-soft);border-color:var(--warn)}
+  .att-grade-row.missing{background:var(--bad-soft);border-color:var(--bad)}
+  .att-grade-row.extra{background:#f0f0f0;border-color:#bbb;color:var(--ink-mute)}
+  .att-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;font-size:.85rem}
+  .att-icon.correct{background:var(--good)}
+  .att-icon.wrong-gram{background:var(--warn)}
+  .att-icon.missing{background:var(--bad)}
+  .att-icon.extra{background:#999}
+  .results-summary{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+  .score-circle{width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p) * 1%),var(--line) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+  .score-circle::after{content:'';position:absolute;width:88px;height:88px;border-radius:50%;background:var(--bg-elev)}
+  .score-circle .num{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700;z-index:1;position:relative}
+  .results-info h2{margin-bottom:6px}
+  .results-info p{color:var(--ink-soft)}
+  .question-review{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:18px 22px;margin-bottom:12px}
+  .question-review.correct{border-left:4px solid var(--good)}
+  .question-review.wrong{border-left:4px solid var(--bad)}
+  .question-review .q-num{font-size:.78rem;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+  .question-review .q-text{font-weight:600;margin-bottom:8px}
+  .question-review .answer-line{font-size:.92rem;padding:4px 0;display:flex;align-items:center;gap:8px}
+  .question-review .answer-line.your{color:var(--ink-soft)}
+  .question-review .answer-line.correct-ans{color:var(--good);font-weight:500}
+  .history-list{display:flex;flex-direction:column;gap:10px}
+  .history-item{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;transition:.15s}
+  .history-item:hover{border-color:var(--line-strong)}
+  .history-item .h-info .h-dept{font-weight:600}
+  .history-item .h-info .h-date{font-size:.85rem;color:var(--ink-mute);margin-top:2px}
+  .history-item .h-score{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600}
+  .history-item .h-score.good{color:var(--good)}
+  .history-item .h-score.bad{color:var(--bad)}
+  .history-empty{text-align:center;padding:40px 20px;color:var(--ink-mute)}
+  .att-tag{font-size:.7rem;background:var(--warn-soft);color:var(--warn);padding:2px 7px;border-radius:10px;font-weight:600;margin-left:6px;letter-spacing:.04em;text-transform:uppercase}
+  .chart-card{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:22px}
+  .chart-card h3{margin-bottom:14px}
+  .chart-svg{width:100%;height:200px;display:block}
+  @media (max-width:600px){
+    .main{padding:20px 14px 50px}
+    .topbar{padding:12px 14px;gap:8px}
+    .topbar-brand{font-size:1.05rem}
+    .topbar-right{gap:8px;font-size:.78rem;flex-wrap:wrap;justify-content:flex-end}
+    .login-card{padding:28px 22px}
+    h1{font-size:1.7rem}
+    .test-card,.att-card{padding:22px 18px}
+    .question-text{font-size:1.2rem}
+    .results-summary{padding:22px;gap:18px}
+    .stat-card .value{font-size:1.4rem}
+    .att-row{grid-template-columns:1fr 80px 32px}
+  }
+</style>
+</head>
+<body>
+
+<div id="login-view" class="login-screen">
+  <div class="login-card">
+    <div class="login-lang">
+      <div class="lang-toggle">
+        <button data-lang="ru" class="active">RU</button>
+        <button data-lang="vi">VI</button>
+      </div>
+    </div>
+    <div class="login-logo">PhoBo</div>
+    <p class="login-sub" data-i18n="loginSubtitle">Тестирование знаний ТК</p>
+    <div id="login-error" class="login-error"></div>
+    <div class="form-group">
+      <label data-i18n="username">Логин</label>
+      <input type="text" id="login-username" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label data-i18n="password">Пароль</label>
+      <input type="password" id="login-password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" id="login-btn" data-i18n="loginBtn">Войти</button>
+    <div class="login-hint" data-i18n="noAccount">Нет аккаунта? Обратись к шефу.</div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="topbar-brand">PhoBo</div>
+    <div class="topbar-right">
+      <div class="lang-toggle">
+        <button data-lang="ru" class="active">RU</button>
+        <button data-lang="vi">VI</button>
+      </div>
+      <span><span data-i18n="hi">Привет</span>, <span class="name" id="user-name"></span></span>
+      <button class="logout-btn" id="logout-btn" data-i18n="logout">Выйти</button>
+    </div>
+  </header>
+  <main class="main" id="main-content"></main>
+</div>
+
+<script src="data.js"></script>
+<script>
+const T = {
+  ru: {
+    loginSubtitle:'Тестирование знаний ТК', username:'Логин', password:'Пароль', loginBtn:'Войти',
+    noAccount:'Нет аккаунта? Обратись к шефу.', badLogin:'Неверный логин или пароль',
+    fillBoth:'Введи логин и пароль', notUserSite:'Это сайт для поваров. Админка: admin.html',
+    hi:'Привет', logout:'Выйти', home:'Главная', testsHeader:'Тесты по разделам',
+    testsHomeDesc:'Выбери раздел — пройди тест из 10 вопросов или сдай аттестацию.',
+    testsTaken:'Тестов пройдено', avgScore:'Средний балл', sectionsAvail:'Доступно разделов',
+    sections:'Разделы кухни', myResults:'Мои результаты',
+    pfSection:'ПФ — Полуфабрикаты', pfDesc:'Тесты и аттестация по полуфабрикатам и соусам.',
+    notTakenYet:'Не пройден', lastScore:'Последний',
+    questionsInBase:'вопр.', dishesInBase:'блюд',
+    quickTest:'Быстрый тест', attestation:'Аттестация',
+    quickTestDesc:'10 случайных вопросов с вариантами. Быстрая проверка.',
+    attestationDesc:'Выбери блюдо — впиши ВСЕ ингредиенты с граммовкой. Серьёзная проверка.',
+    pickDish:'Выбери блюдо для аттестации',
+    questionN:'Вопрос', notInDish:'Какой ингредиент НЕ входит в',
+    inDish:'Какой ингредиент входит в', howManyGrams:'Сколько грамм', forDish:'нужно для',
+    back:'← Назад', next:'Дальше →', finishTest:'Завершить тест',
+    excellent:'Отлично!', good:'Хорошо, но можно лучше', needLearn:'Нужно подучить',
+    correctOf:'Правильных ответов:', reviewAnswers:'Разбор ответов',
+    yourAnswer:'Твой ответ:', correctAnswer:'Правильно:', noAnswer:'— нет ответа —',
+    correct:'верно', wrong:'неверно',
+    backHome:'← На главную', retake:'Пройти ещё раз',
+    historyTitle:'Мои результаты', historyDesc:'Все твои тесты и аттестации. Кликни — увидишь разбор.',
+    noHistory:'Ты ещё не проходил тестов. Начни с главной!',
+    progressTitle:'Прогресс по дням',
+    instruction:'Впиши ингредиент → грамм. Каждая строка — один ингредиент. Не пропусти даже мелкие (соль, перец 0.5г).',
+    addRow:'+ Ещё ингредиент', submitAtt:'Сдать аттестацию',
+    confirmSubmit:'Точно сдать? Изменить потом нельзя.',
+    attResult:'Результат аттестации',
+    attCorrect:'верно', attWrongGram:'не та граммовка', attMissing:'забыл', attExtra:'лишнее',
+    ingredient:'Ингредиент', grams:'грамм',
+    youSaid:'Ты вписал:', rightGram:'Должно быть:', tryAgain:'Пройти снова',
+    pickDishFirst:'Сначала выбери блюдо',
+  },
+  vi: {
+    loginSubtitle:'Kiểm tra kiến thức công thức', username:'Tên đăng nhập', password:'Mật khẩu', loginBtn:'Đăng nhập',
+    noAccount:'Chưa có tài khoản? Hỏi bếp trưởng.', badLogin:'Sai tên đăng nhập hoặc mật khẩu',
+    fillBoth:'Nhập tên đăng nhập và mật khẩu', notUserSite:'Đây là trang cho đầu bếp. Admin: admin.html',
+    hi:'Xin chào', logout:'Đăng xuất', home:'Trang chủ', testsHeader:'Bài kiểm tra theo bộ phận',
+    testsHomeDesc:'Chọn bộ phận — làm 10 câu trắc nghiệm hoặc thi đánh giá đầy đủ.',
+    testsTaken:'Đã làm bài', avgScore:'Điểm TB', sectionsAvail:'Bộ phận',
+    sections:'Bộ phận bếp', myResults:'Kết quả của tôi',
+    pfSection:'PF — Bán thành phẩm', pfDesc:'Bài kiểm tra và đánh giá bán thành phẩm và nước sốt.',
+    notTakenYet:'Chưa làm', lastScore:'Lần cuối',
+    questionsInBase:'câu', dishesInBase:'món',
+    quickTest:'Trắc nghiệm nhanh', attestation:'Đánh giá đầy đủ',
+    quickTestDesc:'10 câu trắc nghiệm có sẵn đáp án. Kiểm tra nhanh.',
+    attestationDesc:'Chọn món — viết TẤT CẢ nguyên liệu kèm số gam. Kiểm tra nghiêm túc.',
+    pickDish:'Chọn món để thi đánh giá',
+    questionN:'Câu', notInDish:'Nguyên liệu nào KHÔNG có trong',
+    inDish:'Nguyên liệu nào CÓ trong', howManyGrams:'Bao nhiêu gam', forDish:'cần cho',
+    back:'← Quay lại', next:'Tiếp →', finishTest:'Hoàn thành',
+    excellent:'Tuyệt vời!', good:'Khá, có thể tốt hơn', needLearn:'Cần học thêm',
+    correctOf:'Câu đúng:', reviewAnswers:'Xem lại đáp án',
+    yourAnswer:'Đáp án của bạn:', correctAnswer:'Đáp án đúng:', noAnswer:'— không trả lời —',
+    correct:'đúng', wrong:'sai',
+    backHome:'← Trang chủ', retake:'Làm lại',
+    historyTitle:'Kết quả của tôi', historyDesc:'Tất cả bài kiểm tra. Bấm để xem chi tiết.',
+    noHistory:'Bạn chưa làm bài nào. Bắt đầu từ trang chủ!',
+    progressTitle:'Tiến độ theo ngày',
+    instruction:'Nhập nguyên liệu → gam. Mỗi dòng một nguyên liệu. Đừng bỏ qua các thứ nhỏ (muối, tiêu 0.5g).',
+    addRow:'+ Thêm nguyên liệu', submitAtt:'Nộp bài',
+    confirmSubmit:'Nộp bài chắc chắn? Không sửa được.',
+    attResult:'Kết quả đánh giá',
+    attCorrect:'đúng', attWrongGram:'sai số gam', attMissing:'thiếu', attExtra:'thừa',
+    ingredient:'Nguyên liệu', grams:'gam',
+    youSaid:'Bạn viết:', rightGram:'Đúng phải là:', tryAgain:'Làm lại',
+    pickDishFirst:'Chọn món trước',
+  }
+};
+
+let lang = localStorage.getItem('phobo_lang') || 'ru';
+function t(k){return T[lang][k] || T.ru[k] || k}
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.documentElement.lang = lang;
+}
+function setLang(newLang){
+  lang = newLang;
+  localStorage.setItem('phobo_lang', lang);
+  document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  applyI18n();
+  if (state.user) renderCurrentView();
+}
+
+const Storage = {
+  getUsers(){
+    const u = localStorage.getItem('phobo_users');
+    if (u) return JSON.parse(u);
+    const d = [
+      {username:'admin',password:'admin123',name:'Шеф',role:'admin'},
+      {username:'povar1',password:'1234',name:'Иван (Повар)',role:'cook'},
+      {username:'povar2',password:'1234',name:'Мария (Повар)',role:'cook'},
+    ];
+    localStorage.setItem('phobo_users', JSON.stringify(d));
+    return d;
+  },
+  getSession(){const s=localStorage.getItem('phobo_session');return s?JSON.parse(s):null},
+  setSession(u){localStorage.setItem('phobo_session',JSON.stringify(u))},
+  clearSession(){localStorage.removeItem('phobo_session')},
+  getResults(){const r=localStorage.getItem('phobo_results');return r?JSON.parse(r):[]},
+  saveResult(r){const a=this.getResults();a.push(r);localStorage.setItem('phobo_results',JSON.stringify(a))},
+  getResultsForUser(u){return this.getResults().filter(r=>r.username===u)},
+  getDishOverrides(){const d=localStorage.getItem('phobo_dish_overrides');return d?JSON.parse(d):{}},
+};
+
+function getDishes(){
+  const o = Storage.getDishOverrides();
+  const m = JSON.parse(JSON.stringify(DISHES));
+  if (o.dishes) Object.keys(o.dishes).forEach(d => m[d] = o.dishes[d]);
+  return m;
+}
+function getPF(){
+  const o = Storage.getDishOverrides();
+  const m = JSON.parse(JSON.stringify(PF_RECIPES));
+  if (o.pf) Object.keys(o.pf).forEach(s => m[s] = o.pf[s]);
+  return m;
+}
+
+let state = {user:null, currentTest:null, currentAtt:null, view:'dashboard', lastViewData:null};
+
+function tryLogin(){
+  const username = document.getElementById('login-username').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.classList.remove('show');
+  if (!username || !password){errEl.textContent=t('fillBoth');errEl.classList.add('show');return}
+  const users = Storage.getUsers();
+  const user = users.find(u => u.username === username && u.password === password);
+  if (!user){errEl.textContent=t('badLogin');errEl.classList.add('show');return}
+  if (user.role === 'admin'){errEl.textContent=t('notUserSite');errEl.classList.add('show');return}
+  Storage.setSession(user);
+  state.user = user;
+  showApp();
+}
+
+function logout(){
+  Storage.clearSession();
+  state.user = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-view').classList.remove('hidden');
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+function showApp(){
+  document.getElementById('login-view').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('user-name').textContent = state.user.name;
+  setView('dashboard');
+}
+
+function setView(view, data){
+  state.view = view;
+  state.lastViewData = data;
+  renderCurrentView();
+  window.scrollTo(0, 0);
+}
+
+function renderCurrentView(){
+  const v = state.view;
+  if (v==='dashboard') renderDashboard();
+  else if (v==='mode-pick') renderModePick(state.lastViewData);
+  else if (v==='pick-dish') renderPickDishForAtt(state.lastViewData);
+  else if (v==='test') renderTest();
+  else if (v==='att') renderAttestation();
+  else if (v==='result') renderResult(state.lastViewData);
+  else if (v==='history') renderHistory();
+}
+
+function renderDashboard(){
+  const main = document.getElementById('main-content');
+  const results = Storage.getResultsForUser(state.user.username);
+  const totalTaken = results.length;
+  const avgScore = totalTaken > 0
+    ? Math.round(results.reduce((s,r) => s + (r.mode==='attestation'?r.score*100:r.correct/r.total*100), 0) / totalTaken)
+    : 0;
+  const allDishes = getDishes();
+  const allPF = getPF();
+
+  function deptCard(deptName, isPF){
+    const items = (isPF?allPF:allDishes)[deptName] || [];
+    const qsCount = (QUESTIONS_DB[deptName] || []).length;
+    const myResults = results.filter(r => r.department === deptName);
+    const last = myResults.length > 0 ? myResults[myResults.length-1] : null;
+    let badge = '<span class="badge badge-neutral">' + t('notTakenYet') + '</span>';
+    if (last){
+      const pct = Math.round(last.mode==='attestation'?last.score*100:last.correct/last.total*100);
+      const cls = pct >= 80 ? 'badge-good' : pct >= 60 ? 'badge-neutral' : 'badge-bad';
+      badge = '<span class="badge ' + cls + '">' + t('lastScore') + ': ' + pct + '%</span>';
+    }
+    return `<button class="dept-card" data-dept="${escapeHtml(deptName)}" data-pf="${isPF?'1':'0'}">
+      <div>
+        <div class="dept-name">${escapeHtml(deptName)}</div>
+        <div class="dept-meta">${items.length} ${t('dishesInBase')} · ${qsCount} ${t('questionsInBase')}</div>
+      </div>
+      <div class="dept-footer">${badge}<span class="dept-arrow">→</span></div>
+    </button>`;
+  }
+
+  const dishDepts = Object.keys(allDishes).filter(d => allDishes[d].length > 0).map(d => deptCard(d, false)).join('');
+  const pfDepts = Object.keys(allPF).filter(d => allPF[d].length > 0).map(d => deptCard(d, true)).join('');
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">${t('home')}</div>
+      <h1>${t('testsHeader')}</h1>
+      <p>${t('testsHomeDesc')}</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">${t('testsTaken')}</div><div class="value">${totalTaken}</div></div>
+      <div class="stat-card"><div class="label">${t('avgScore')}</div><div class="value">${avgScore}<span class="small">%</span></div></div>
+      <div class="stat-card"><div class="label">${t('sectionsAvail')}</div><div class="value">${Object.keys(allDishes).length + Object.keys(allPF).length}</div></div>
+    </div>
+    <div class="section-title">
+      <h3>${t('sections')}</h3>
+      <button class="btn btn-ghost btn-sm" id="goto-history">${t('myResults')} →</button>
+    </div>
+    <div class="dept-grid">${dishDepts}</div>
+    ${pfDepts ? `
+      <div class="section-title"><h3>${t('pfSection')}</h3></div>
+      <p class="section-desc">${t('pfDesc')}</p>
+      <div class="dept-grid">${pfDepts}</div>` : ''}`;
+
+  document.querySelectorAll('.dept-card').forEach(c => {
+    c.addEventListener('click', () => setView('mode-pick', {dept:c.dataset.dept, isPF:c.dataset.pf==='1'}));
+  });
+  document.getElementById('goto-history').addEventListener('click', () => setView('history'));
+}
+
+function renderModePick({dept, isPF}){
+  const main = document.getElementById('main-content');
+  const items = (isPF?getPF():getDishes())[dept] || [];
+  const qsCount = (QUESTIONS_DB[dept] || []).length;
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">${t('home')} / ${escapeHtml(dept)}</div>
+      <h1>${escapeHtml(dept)}</h1>
+      <p>${items.length} ${t('dishesInBase')} · ${qsCount} ${t('questionsInBase')}</p>
+    </div>
+    <div class="mode-picker">
+      ${qsCount > 0 ? `
+      <button class="mode-card" id="mode-test">
+        <div class="mode-icon">A</div>
+        <div>
+          <div class="mode-title">${t('quickTest')}</div>
+          <div class="mode-desc">${t('quickTestDesc')}</div>
+        </div>
+      </button>` : ''}
+      <button class="mode-card attestation" id="mode-att">
+        <div class="mode-icon">∎</div>
+        <div>
+          <div class="mode-title">${t('attestation')}</div>
+          <div class="mode-desc">${t('attestationDesc')}</div>
+        </div>
+      </button>
+    </div>
+    <div style="margin-top:24px;"><button class="btn btn-ghost" id="back-dash">${t('backHome')}</button></div>`;
+
+  if (document.getElementById('mode-test')){
+    document.getElementById('mode-test').addEventListener('click', () => startTest(dept));
+  }
+  document.getElementById('mode-att').addEventListener('click', () => setView('pick-dish', {dept, isPF}));
+  document.getElementById('back-dash').addEventListener('click', () => setView('dashboard'));
+}
+
+function renderPickDishForAtt({dept, isPF}){
+  const main = document.getElementById('main-content');
+  const items = (isPF?getPF():getDishes())[dept] || [];
+  const cards = items.map((dish, idx) => {
+    const photo = dish.photo ? '<img src="' + escapeHtml(dish.photo) + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;">' : '';
+    return `<button class="dept-card" data-idx="${idx}" style="flex-direction:row;align-items:center;gap:14px;min-height:auto;">
+      ${photo}
+      <div style="flex:1;">
+        <div class="dept-name" style="font-size:1.05rem;">${escapeHtml(dish[lang] || dish.ru)}</div>
+        <div class="dept-meta">${dish.ingredients.length} ${t('ingredient').toLowerCase()} ${dish.portion ? '· ' + dish.portion + 'г' : ''}</div>
+      </div>
+      <span class="dept-arrow">→</span>
+    </button>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">${escapeHtml(dept)} · ${t('attestation')}</div>
+      <h1>${t('pickDish')}</h1>
+    </div>
+    <div class="dept-grid" style="grid-template-columns:1fr;">${cards}</div>
+    <div style="margin-top:24px;"><button class="btn btn-ghost" id="back-mode">${t('back')}</button></div>`;
+
+  document.querySelectorAll('.dept-card').forEach(c => {
+    c.addEventListener('click', () => startAttestation(dept, isPF, parseInt(c.dataset.idx)));
+  });
+  document.getElementById('back-mode').addEventListener('click', () => setView('mode-pick', {dept, isPF}));
+}
+
+function startTest(deptName){
+  const allQs = QUESTIONS_DB[deptName] || [];
+  if (allQs.length === 0){ alert(t('pickDishFirst')); return; }
+  const count = Math.min(10, allQs.length);
+  const shuffled = [...allQs].sort(() => Math.random() - 0.5).slice(0, count);
+  state.currentTest = {department:deptName, questions:shuffled, answers:new Array(shuffled.length).fill(null), currentIdx:0, startedAt:Date.now()};
+  setView('test');
+}
+
+function composeQuestion(q){
+  if (q.type === 'grammage'){
+    return {
+      main: t('howManyGrams') + ' «' + (q.ingredient[lang] || q.ingredient.ru) + '» ' + t('forDish') + ' «' + (q.dish[lang] || q.dish.ru) + '»?',
+      sub: lang === 'ru' ? (q.ingredient.vi + ' / ' + q.dish.vi) : (q.ingredient.ru + ' / ' + q.dish.ru)
+    };
+  }
+  if (q.type === 'not_in_dish' || q.type === 'in_dish'){
+    const word = q.type === 'not_in_dish' ? t('notInDish') : t('inDish');
+    return { main: word + ' «' + (q.dish[lang] || q.dish.ru) + '»?', sub: lang === 'ru' ? q.dish.vi : q.dish.ru };
+  }
+  return {main:'?', sub:''};
+}
+
+function getOptionLabels(q){
+  if (q.options_bilingual){
+    return q.options_bilingual.map(o => ({main: o[lang] || o.ru, sub: lang==='ru'?o.vi:o.ru}));
+  }
+  return q.options.map(o => ({main:o, sub:''}));
+}
+
+function renderTest(){
+  const tt = state.currentTest;
+  const q = tt.questions[tt.currentIdx];
+  const main = document.getElementById('main-content');
+  const progress = ((tt.currentIdx + 1) / tt.questions.length) * 100;
+  const qComp = composeQuestion(q);
+  const optionLabels = getOptionLabels(q);
+
+  const optionsHtml = optionLabels.map((opt, i) => {
+    const isSelected = tt.answers[tt.currentIdx] === i;
+    const letter = String.fromCharCode(65 + i);
+    return `<button class="option ${isSelected?'selected':''}" data-idx="${i}">
+      <span class="opt-letter">${letter}</span>
+      <span class="opt-text">${escapeHtml(opt.main)}${opt.sub ? '<div class="opt-text-sub">' + escapeHtml(opt.sub) + '</div>' : ''}</span>
+    </button>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="test-card">
+      <div class="test-progress">
+        <div class="bar"><div class="bar-fill" style="width:${progress}%"></div></div>
+        <div class="num">${tt.currentIdx + 1} / ${tt.questions.length}</div>
+      </div>
+      <div class="question-meta">${escapeHtml(tt.department)} · ${t('questionN')} ${tt.currentIdx + 1}</div>
+      <h2 class="question-text">${escapeHtml(qComp.main)}</h2>
+      ${qComp.sub ? '<div class="question-text-sub">' + escapeHtml(qComp.sub) + '</div>' : ''}
+      <div class="options-list">${optionsHtml}</div>
+      <div class="test-actions">
+        <button class="btn btn-ghost" id="prev-btn" ${tt.currentIdx===0?'disabled':''}>${t('back')}</button>
+        <button class="btn btn-primary" id="next-btn" disabled>
+          ${tt.currentIdx === tt.questions.length-1 ? t('finishTest') : t('next')}
+        </button>
+      </div>
+    </div>`;
+
+  if (tt.answers[tt.currentIdx] !== null) document.getElementById('next-btn').disabled = false;
+  document.querySelectorAll('.option').forEach(o => {
+    o.addEventListener('click', () => {
+      tt.answers[tt.currentIdx] = parseInt(o.dataset.idx);
+      document.querySelectorAll('.option').forEach(x => x.classList.remove('selected'));
+      o.classList.add('selected');
+      document.getElementById('next-btn').disabled = false;
+    });
+  });
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (tt.currentIdx < tt.questions.length - 1){ tt.currentIdx++; renderTest(); }
+    else finishTest();
+  });
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    if (tt.currentIdx > 0){ tt.currentIdx--; renderTest(); }
+  });
+}
+
+function finishTest(){
+  const tt = state.currentTest;
+  let correctCount = 0;
+  const reviewed = tt.questions.map((q, i) => {
+    const userAns = tt.answers[i];
+    const isCorrect = userAns === q.correct;
+    if (isCorrect) correctCount++;
+    return {
+      question: composeQuestion(q),
+      options: getOptionLabels(q).map(o => o.main),
+      correct: q.correct, userAnswer: userAns, isCorrect
+    };
+  });
+  const result = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2,8),
+    username: state.user.username, name: state.user.name,
+    department: tt.department, mode: 'test',
+    correct: correctCount, total: tt.questions.length,
+    answers: reviewed,
+    completedAt: new Date().toISOString(),
+    durationSec: Math.round((Date.now() - tt.startedAt) / 1000)
+  };
+  Storage.saveResult(result);
+  state.currentTest = null;
+  setView('result', result);
+}
+
+function startAttestation(deptName, isPF, dishIdx){
+  const items = (isPF?getPF():getDishes())[deptName];
+  const dish = items[dishIdx];
+  state.currentAtt = {department:deptName, isPF, dish, rows:[{name:'',grams:''}], startedAt:Date.now()};
+  setView('att');
+}
+
+function renderAttestation(){
+  const att = state.currentAtt;
+  const main = document.getElementById('main-content');
+  const dish = att.dish;
+  const dishName = dish[lang] || dish.ru;
+  const dishNameSub = lang === 'ru' ? dish.vi : dish.ru;
+
+  const rowsHtml = att.rows.map((row, i) => `
+    <div class="att-row">
+      <input type="text" placeholder="${t('ingredient')}" value="${escapeHtml(row.name)}" data-idx="${i}" data-field="name">
+      <input type="text" inputmode="decimal" class="gr" placeholder="${t('grams')}" value="${escapeHtml(row.grams)}" data-idx="${i}" data-field="grams">
+      <button class="del-btn" data-del="${i}" title="×">×</button>
+    </div>`).join('');
+
+  main.innerHTML = `
+    <div class="att-card">
+      <div class="att-dish-head">
+        <div class="dish-name">${escapeHtml(dishName)}</div>
+        <div class="dish-name-sub">${escapeHtml(dishNameSub)}${dish.portion?' · '+dish.portion+'г':''}</div>
+      </div>
+      ${dish.photo ? '<img src="' + escapeHtml(dish.photo) + '" class="att-dish-photo" alt="">' : ''}
+      <div class="att-instruction">${t('instruction')}</div>
+      <div class="att-rows" id="att-rows">${rowsHtml}</div>
+      <button class="att-add-row" id="att-add">${t('addRow')}</button>
+      <div style="display:flex;gap:10px;margin-top:22px;justify-content:space-between;">
+        <button class="btn btn-ghost" id="att-cancel">${t('back')}</button>
+        <button class="btn btn-primary" id="att-submit">${t('submitAtt')}</button>
+      </div>
+    </div>`;
+
+  document.querySelectorAll('#att-rows input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = parseInt(e.target.dataset.idx);
+      att.rows[i][e.target.dataset.field] = e.target.value;
+    });
+  });
+  document.querySelectorAll('#att-rows .del-btn').forEach(b => {
+    b.addEventListener('click', e => {
+      const i = parseInt(e.target.dataset.del);
+      if (att.rows.length > 1){ att.rows.splice(i,1); renderAttestation(); }
+    });
+  });
+  document.getElementById('att-add').addEventListener('click', () => {
+    att.rows.push({name:'',grams:''});
+    renderAttestation();
+    setTimeout(() => {
+      const ins = document.querySelectorAll('#att-rows input[data-field="name"]');
+      if (ins.length) ins[ins.length-1].focus();
+    }, 50);
+  });
+  document.getElementById('att-cancel').addEventListener('click', () =>
+    setView('pick-dish', {dept:att.department, isPF:att.isPF}));
+  document.getElementById('att-submit').addEventListener('click', () => {
+    if (!confirm(t('confirmSubmit'))) return;
+    finishAttestation();
+  });
+}
+
+function normalizeIng(s){
+  return String(s||'').toLowerCase().trim()
+    .replace(/[\s.,/!?()\-—«»"']/g, '')
+    .replace(/(пф|pf)$/i, '')
+    .replace(/ё/g, 'е');
+}
+function gramsMatch(a, b){
+  try{
+    const na = parseFloat(String(a).replace(',', '.'));
+    const nb = parseFloat(String(b).replace(',', '.'));
+    if (isNaN(na) || isNaN(nb)) return false;
+    return Math.abs(na - nb) < 0.01;
+  } catch { return false; }
+}
+
+function gradeAttestation(submittedRows, truthIngs){
+  const truth = truthIngs.map(ing => ({
+    ru: ing.ru, vi: ing.vi, grams: ing.grams,
+    nRu: normalizeIng(ing.ru), nVi: normalizeIng(ing.vi),
+    matched: false
+  }));
+  const graded = [];
+  submittedRows.forEach(row => {
+    if (!row.name && !row.grams) return;
+    const norm = normalizeIng(row.name);
+    if (!norm){ graded.push({status:'extra', userName:row.name, userGrams:row.grams}); return; }
+    let bestI = -1, bestScore = 0;
+    truth.forEach((ing, i) => {
+      if (ing.matched) return;
+      let s = 0;
+      if (ing.nRu === norm || ing.nVi === norm) s = 1.0;
+      else if ((ing.nRu && (ing.nRu.includes(norm) || norm.includes(ing.nRu))) ||
+               (ing.nVi && (ing.nVi.includes(norm) || norm.includes(ing.nVi)))) s = 0.9;
+      else {
+        const minL = Math.min(norm.length, ing.nRu.length);
+        if (minL >= 4){
+          let common = 0;
+          for (let c=0; c<minL; c++) if (norm[c] === ing.nRu[c]) common++;
+          if (common / minL >= 0.7) s = 0.7;
+        }
+      }
+      if (s > bestScore){ bestScore = s; bestI = i; }
+    });
+    if (bestI >= 0 && bestScore >= 0.7){
+      truth[bestI].matched = true;
+      const okGrams = gramsMatch(row.grams, truth[bestI].grams);
+      graded.push({
+        status: okGrams ? 'correct' : 'wrong-gram',
+        userName: row.name, userGrams: row.grams,
+        truthRu: truth[bestI].ru, truthVi: truth[bestI].vi, truthGrams: truth[bestI].grams
+      });
+    } else {
+      graded.push({status:'extra', userName:row.name, userGrams:row.grams});
+    }
+  });
+  truth.forEach(ing => {
+    if (!ing.matched) graded.push({status:'missing', truthRu:ing.ru, truthVi:ing.vi, truthGrams:ing.grams});
+  });
+  const correctCount = graded.filter(g => g.status === 'correct').length;
+  const wrongGramCount = graded.filter(g => g.status === 'wrong-gram').length;
+  const extraCount = graded.filter(g => g.status === 'extra').length;
+  const totalNeeded = truth.length;
+  const score = Math.max(0, Math.min(1, (correctCount + wrongGramCount * 0.5) / totalNeeded - extraCount * 0.05));
+  return {graded, score, correctCount, totalNeeded, wrongGramCount};
+}
+
+function finishAttestation(){
+  const att = state.currentAtt;
+  const grading = gradeAttestation(att.rows, att.dish.ingredients);
+  const result = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2,8),
+    username: state.user.username, name: state.user.name,
+    department: att.department, isPF: att.isPF, mode: 'attestation',
+    dish: {ru: att.dish.ru, vi: att.dish.vi, portion: att.dish.portion},
+    correct: grading.correctCount, total: grading.totalNeeded,
+    score: grading.score, grading: grading.graded,
+    submitted: att.rows,
+    completedAt: new Date().toISOString(),
+    durationSec: Math.round((Date.now() - att.startedAt) / 1000)
+  };
+  Storage.saveResult(result);
+  state.currentAtt = null;
+  setView('result', result);
+}
+
+function renderResult(result){
+  if (result.mode === 'attestation') return renderAttResult(result);
+  const main = document.getElementById('main-content');
+  const pct = Math.round(result.correct / result.total * 100);
+  const verdict = pct >= 80 ? t('excellent') : pct >= 60 ? t('good') : t('needLearn');
+
+  const reviewHtml = result.answers.map((a, i) => {
+    const userAnsText = (a.userAnswer !== null && a.userAnswer !== undefined) ? a.options[a.userAnswer] : t('noAnswer');
+    const correctAnsText = a.options[a.correct];
+    const qText = (a.question && typeof a.question === 'object') ? a.question.main : a.question;
+    return `<div class="question-review ${a.isCorrect?'correct':'wrong'}">
+      <div class="q-num">${t('questionN')} ${i+1} · ${a.isCorrect?t('correct'):t('wrong')}</div>
+      <div class="q-text">${escapeHtml(qText)}</div>
+      <div class="answer-line your"><span>${a.isCorrect?'✓':'✗'}</span><span>${t('yourAnswer')} <strong>${escapeHtml(userAnsText)}</strong></span></div>
+      ${!a.isCorrect ? '<div class="answer-line correct-ans"><span>→</span><span>' + t('correctAnswer') + ' <strong>' + escapeHtml(correctAnsText) + '</strong></span></div>' : ''}
+    </div>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">${t('home')} / ${escapeHtml(result.department)}</div>
+      <h1>${escapeHtml(result.department)}</h1>
+    </div>
+    <div class="results-summary">
+      <div class="score-circle" style="--p:${pct}"><span class="num">${pct}%</span></div>
+      <div class="results-info"><h2>${verdict}</h2><p>${t('correctOf')} <strong>${result.correct} / ${result.total}</strong></p></div>
+    </div>
+    <div class="section-title"><h3>${t('reviewAnswers')}</h3></div>
+    ${reviewHtml}
+    <div style="display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;">
+      <button class="btn btn-primary" id="back-dash">${t('backHome')}</button>
+      <button class="btn btn-ghost" id="retake">${t('retake')}</button>
+    </div>`;
+
+  document.getElementById('back-dash').addEventListener('click', () => setView('dashboard'));
+  document.getElementById('retake').addEventListener('click', () => startTest(result.department));
+}
+
+function renderAttResult(result){
+  const main = document.getElementById('main-content');
+  const pct = Math.round(result.score * 100);
+  const verdict = pct >= 80 ? t('excellent') : pct >= 60 ? t('good') : t('needLearn');
+  const dishName = result.dish[lang] || result.dish.ru;
+  const correctCount = result.grading.filter(g => g.status === 'correct').length;
+  const wrongGramCount = result.grading.filter(g => g.status === 'wrong-gram').length;
+  const missingCount = result.grading.filter(g => g.status === 'missing').length;
+  const extraCount = result.grading.filter(g => g.status === 'extra').length;
+
+  const gradeHtml = result.grading.map(g => {
+    if (g.status === 'correct'){
+      return `<div class="att-grade-row correct">
+        <div class="att-icon correct">✓</div>
+        <div><strong>${escapeHtml(g.truthRu)}</strong> · ${escapeHtml(g.truthGrams)}г</div>
+      </div>`;
+    }
+    if (g.status === 'wrong-gram'){
+      return `<div class="att-grade-row wrong-gram">
+        <div class="att-icon wrong-gram">!</div>
+        <div>
+          <strong>${escapeHtml(g.truthRu)}</strong>
+          <div style="font-size:.85rem;color:var(--ink-soft);">${t('youSaid')} ${escapeHtml(g.userGrams)}г · ${t('rightGram')} <strong>${escapeHtml(g.truthGrams)}г</strong></div>
+        </div>
+      </div>`;
+    }
+    if (g.status === 'missing'){
+      return `<div class="att-grade-row missing">
+        <div class="att-icon missing">−</div>
+        <div><strong>${escapeHtml(g.truthRu)}</strong> · ${escapeHtml(g.truthGrams)}г · <em>${t('attMissing')}</em></div>
+      </div>`;
+    }
+    if (g.status === 'extra'){
+      return `<div class="att-grade-row extra">
+        <div class="att-icon extra">+</div>
+        <div>${escapeHtml(g.userName || '?')} · ${escapeHtml(g.userGrams || '?')}г · <em>${t('attExtra')}</em></div>
+      </div>`;
+    }
+    return '';
+  }).join('');
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">${t('attestation')} · ${escapeHtml(result.department)}</div>
+      <h1>${escapeHtml(dishName)}</h1>
+    </div>
+    <div class="results-summary">
+      <div class="score-circle" style="--p:${pct}"><span class="num">${pct}%</span></div>
+      <div class="results-info">
+        <h2>${verdict}</h2>
+        <p>
+          <span class="badge badge-good">${correctCount} ${t('attCorrect')}</span>
+          ${wrongGramCount > 0 ? '<span class="badge badge-warn">' + wrongGramCount + ' ' + t('attWrongGram') + '</span>' : ''}
+          ${missingCount > 0 ? '<span class="badge badge-bad">' + missingCount + ' ' + t('attMissing') + '</span>' : ''}
+          ${extraCount > 0 ? '<span class="badge badge-neutral">' + extraCount + ' ' + t('attExtra') + '</span>' : ''}
+        </p>
+      </div>
+    </div>
+    <div class="section-title"><h3>${t('attResult')}</h3></div>
+    <div class="att-grade-result">${gradeHtml}</div>
+    <div style="display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;">
+      <button class="btn btn-primary" id="back-dash">${t('backHome')}</button>
+      <button class="btn btn-ghost" id="retake-att">${t('tryAgain')}</button>
+    </div>`;
+
+  document.getElementById('back-dash').addEventListener('click', () => setView('dashboard'));
+  document.getElementById('retake-att').addEventListener('click', () =>
+    setView('pick-dish', {dept: result.department, isPF: result.isPF}));
+}
+
+function renderHistory(){
+  const main = document.getElementById('main-content');
+  const results = Storage.getResultsForUser(state.user.username).slice().reverse();
+
+  let chartHtml = '';
+  if (results.length >= 2){
+    chartHtml = '<div class="chart-card"><h3>' + t('progressTitle') + '</h3>' + renderChart(results) + '</div>';
+  }
+
+  let listHtml;
+  if (results.length === 0){
+    listHtml = '<div class="history-empty">' + t('noHistory') + '</div>';
+  } else {
+    listHtml = '<div class="history-list">' + results.map(r => {
+      const isAtt = r.mode === 'attestation';
+      const pct = isAtt ? Math.round(r.score * 100) : Math.round(r.correct / r.total * 100);
+      const cls = pct >= 80 ? 'good' : pct >= 60 ? '' : 'bad';
+      const date = new Date(r.completedAt).toLocaleString(lang === 'vi' ? 'vi-VN' : 'ru-RU', {dateStyle:'medium', timeStyle:'short'});
+      const subtitle = isAtt ? (r.dish[lang] || r.dish.ru) : (r.correct + '/' + r.total + ' ' + t('attCorrect'));
+      return `<div class="history-item" data-id="${r.id}">
+        <div class="h-info">
+          <div class="h-dept">${escapeHtml(r.department)} ${isAtt ? '<span class="att-tag">' + t('attestation') + '</span>' : ''}</div>
+          <div class="h-date">${date} · ${escapeHtml(subtitle)}</div>
+        </div>
+        <div class="h-score ${cls}">${pct}%</div>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">${t('home')}</div>
+      <h1>${t('historyTitle')}</h1>
+      <p>${t('historyDesc')}</p>
+    </div>
+    ${chartHtml}
+    ${listHtml}
+    <div style="margin-top:24px;"><button class="btn btn-ghost" id="back-dash">${t('backHome')}</button></div>`;
+
+  document.querySelectorAll('.history-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const r = results.find(x => x.id === item.dataset.id);
+      if (r) setView('result', r);
+    });
+  });
+  document.getElementById('back-dash').addEventListener('click', () => setView('dashboard'));
+}
+
+function renderChart(results){
+  const byDate = {};
+  results.forEach(r => {
+    const day = new Date(r.completedAt).toISOString().slice(0, 10);
+    const pct = r.mode === 'attestation' ? r.score * 100 : (r.correct / r.total * 100);
+    if (!byDate[day]) byDate[day] = [];
+    byDate[day].push(pct);
+  });
+  const dates = Object.keys(byDate).sort();
+  const points = dates.map(d => ({date: d, avg: byDate[d].reduce((s, v) => s + v, 0) / byDate[d].length}));
+  if (points.length < 2) return '';
+
+  const W = 720, H = 200, PAD_L = 36, PAD_R = 12, PAD_T = 14, PAD_B = 28;
+  const innerW = W - PAD_L - PAD_R, innerH = H - PAD_T - PAD_B;
+  const xStep = points.length > 1 ? innerW / (points.length - 1) : innerW;
+  const xy = points.map((p, i) => ({
+    x: PAD_L + i * xStep,
+    y: PAD_T + innerH - (p.avg / 100) * innerH,
+    avg: p.avg, date: p.date
+  }));
+  const linePath = xy.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+  const areaPath = linePath + ' L' + xy[xy.length-1].x + ',' + (PAD_T+innerH) + ' L' + xy[0].x + ',' + (PAD_T+innerH) + ' Z';
+
+  const yLabels = [0, 50, 100].map(v => {
+    const y = PAD_T + innerH - (v / 100) * innerH;
+    return `<line x1="${PAD_L}" y1="${y}" x2="${W - PAD_R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2,3"/>
+      <text x="${PAD_L - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="var(--ink-mute)">${v}%</text>`;
+  }).join('');
+
+  const xLabelIdxs = points.length <= 4 ? points.map((_, i) => i) : [0, Math.floor(points.length/2), points.length - 1];
+  const xLabels = xLabelIdxs.map(i => {
+    const d = new Date(points[i].date);
+    const lbl = d.toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'ru-RU', {day:'numeric', month:'short'});
+    return `<text x="${xy[i].x}" y="${H - 8}" text-anchor="middle" font-size="10" fill="var(--ink-mute)">${lbl}</text>`;
+  }).join('');
+
+  const dots = xy.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="var(--accent)"/>`).join('');
+
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    ${yLabels}
+    <path d="${areaPath}" fill="var(--accent-soft)" opacity="0.6"/>
+    <path d="${linePath}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    ${dots}
+    ${xLabels}
+  </svg>`;
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('login-btn').addEventListener('click', tryLogin);
+['login-username', 'login-password'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+});
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+document.querySelectorAll('.lang-toggle').forEach(toggle => {
+  toggle.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => setLang(btn.dataset.lang));
+  });
+});
+document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+applyI18n();
+
+const session = Storage.getSession();
+if (session && session.role === 'cook'){ state.user = session; showApp(); }
+</script>
+</body>
+</html>

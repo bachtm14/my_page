@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhoBo · Админ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#1a1614; --bg-elev:#25201d; --bg-soft:#2e2824;
+    --ink:#f5f1ea; --ink-soft:#b9b0a5; --ink-mute:#7d756d;
+    --accent:#e07a4d; --accent-soft:rgba(224,122,77,0.12);
+    --good:#6dbc8e; --good-soft:rgba(109,188,142,0.15);
+    --bad:#e26464; --bad-soft:rgba(226,100,100,0.15);
+    --warn:#e0b04a; --warn-soft:rgba(224,176,74,0.15);
+    --line:#3a3530; --line-strong:#4a443e;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);
+    --shadow-lg:0 10px 40px rgba(0,0,0,.4);
+    --radius:10px; --radius-lg:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+  h1{font-size:2rem} h2{font-size:1.5rem} h3{font-size:1.2rem}
+  button{font:inherit;cursor:pointer;border:0;background:0;color:inherit}
+  input,select,textarea{font:inherit;color:inherit}
+  .hidden{display:none!important}
+
+  .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 30% 20%,rgba(224,122,77,.15) 0%,transparent 50%),var(--bg)}
+  .login-card{background:var(--bg-elev);border-radius:var(--radius-lg);padding:40px 36px;width:100%;max-width:420px;box-shadow:var(--shadow-lg);border:1px solid var(--line)}
+  .login-logo{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:12px}
+  .login-logo::before{content:'◆';color:var(--accent)}
+  .login-tag{font-size:.75rem;background:var(--accent-soft);color:var(--accent);padding:3px 10px;border-radius:12px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;font-weight:600}
+  .login-sub{color:var(--ink-soft);font-size:.95rem;margin-bottom:32px}
+
+  .form-group{margin-bottom:16px}
+  .form-group label{display:block;font-size:.85rem;color:var(--ink-soft);margin-bottom:6px;font-weight:500}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--line-strong);border-radius:var(--radius);background:var(--bg);color:var(--ink);transition:.15s}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:0;border-color:var(--accent)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:var(--radius);font-weight:600;font-size:.95rem;transition:.15s;border:1.5px solid transparent}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:#cc6a3f}
+  .btn-ghost{color:var(--ink);border-color:var(--line-strong)}
+  .btn-ghost:hover{background:var(--bg-soft)}
+  .btn-danger{color:var(--bad);border-color:var(--bad-soft);background:var(--bad-soft)}
+  .btn-danger:hover{background:var(--bad);color:#fff}
+  .btn-block{width:100%}
+  .btn-lg{padding:14px 28px}
+  .btn-sm{padding:7px 13px;font-size:.85rem}
+  .login-error{background:var(--bad-soft);color:var(--bad);padding:10px 14px;border-radius:var(--radius);font-size:.88rem;margin-bottom:16px;display:none}
+  .login-error.show{display:block}
+
+  #app{min-height:100vh;display:grid;grid-template-columns:240px 1fr}
+  .sidebar{background:var(--bg-elev);border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:4px}
+  .sidebar-brand{font-family:'Fraunces',serif;font-weight:700;font-size:1.2rem;padding:0 12px 22px;border-bottom:1px solid var(--line);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sidebar-brand::before{content:'◆';color:var(--accent)}
+  .sidebar-brand .tag{font-family:'Inter',sans-serif;font-size:.7rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px;letter-spacing:.08em}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:var(--ink-soft);font-size:.93rem;font-weight:500;transition:.15s;cursor:pointer;text-align:left;width:100%}
+  .nav-item:hover{background:var(--bg-soft);color:var(--ink)}
+  .nav-item.active{background:var(--accent-soft);color:var(--accent)}
+  .nav-item .ico{width:18px;text-align:center}
+  .sidebar-bottom{margin-top:auto;padding-top:16px;border-top:1px solid var(--line)}
+  .sidebar-user{padding:8px 12px;font-size:.85rem;color:var(--ink-mute);margin-bottom:6px}
+  .sidebar-user .name{color:var(--ink);font-weight:600;display:block;font-size:.95rem}
+
+  .content{padding:32px 36px;max-width:1200px}
+  .pageheader{margin-bottom:26px}
+  .pageheader .crumb{font-size:.78rem;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+  .pageheader p{color:var(--ink-soft);margin-top:4px}
+
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+  .stat-card{background:var(--bg-elev);padding:18px 20px;border-radius:var(--radius);border:1px solid var(--line)}
+  .stat-card .label{font-size:.78rem;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+  .stat-card .value{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600}
+  .stat-card .value .small{font-size:.9rem;color:var(--ink-mute);font-weight:400}
+  .stat-card .value.good{color:var(--good)}
+  .stat-card .value.bad{color:var(--bad)}
+
+  .table-wrap{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);font-size:.92rem;white-space:nowrap}
+  td.wrap{white-space:normal}
+  th{background:var(--bg-soft);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-mute);font-weight:600}
+  tr:last-child td{border-bottom:0}
+  tr:hover td{background:var(--bg-soft)}
+  td.num{font-variant-numeric:tabular-nums;font-weight:600}
+  td.score-cell{font-family:'Fraunces',serif;font-weight:600}
+  td.score-cell.good{color:var(--good)}
+  td.score-cell.bad{color:var(--bad)}
+  .row-clickable{cursor:pointer}
+  .empty-state{padding:50px 30px;text-align:center;color:var(--ink-mute)}
+
+  .filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:end}
+  .filter-group{display:flex;flex-direction:column;gap:4px}
+  .filter-group label{font-size:.78rem;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.06em}
+  .filter-group input,.filter-group select{padding:8px 12px;background:var(--bg-elev);border:1px solid var(--line-strong);border-radius:8px;color:var(--ink);min-width:160px}
+
+  .badge{font-size:.75rem;padding:3px 8px;border-radius:12px;font-weight:500;display:inline-block}
+  .badge-good{background:var(--good-soft);color:var(--good)}
+  .badge-bad{background:var(--bad-soft);color:var(--bad)}
+  .badge-warn{background:var(--warn-soft);color:var(--warn)}
+  .badge-neutral{background:var(--bg-soft);color:var(--ink-soft)}
+  .att-tag{font-size:.7rem;background:var(--warn-soft);color:var(--warn);padding:2px 7px;border-radius:10px;font-weight:600;margin-left:6px;letter-spacing:.04em;text-transform:uppercase}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100;backdrop-filter:blur(3px)}
+  .modal{background:var(--bg-elev);border-radius:var(--radius-lg);padding:28px;max-width:680px;width:100%;box-shadow:var(--shadow-lg);border:1px solid var(--line);max-height:88vh;overflow-y:auto}
+  .modal h3{margin-bottom:18px}
+
+  .question-review{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin-bottom:8px}
+  .question-review.correct{border-left:4px solid var(--good)}
+  .question-review.wrong{border-left:4px solid var(--bad)}
+  .question-review .q-text{font-weight:600;margin-bottom:8px;font-size:.95rem}
+  .question-review .answer-line{font-size:.88rem;padding:3px 0;color:var(--ink-soft)}
+  .question-review .answer-line.correct-ans{color:var(--good)}
+
+  .att-grade-row{padding:8px 12px;border-radius:6px;margin-bottom:5px;display:flex;align-items:center;gap:10px;font-size:.88rem;border:1px solid var(--line)}
+  .att-grade-row.correct{background:var(--good-soft);border-color:var(--good)}
+  .att-grade-row.wrong-gram{background:var(--warn-soft);border-color:var(--warn)}
+  .att-grade-row.missing{background:var(--bad-soft);border-color:var(--bad)}
+  .att-grade-row.extra{background:var(--bg-soft);color:var(--ink-mute)}
+  .att-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;font-size:.78rem}
+  .att-icon.correct{background:var(--good)} .att-icon.wrong-gram{background:var(--warn)}
+  .att-icon.missing{background:var(--bad)} .att-icon.extra{background:#666}
+
+  /* Recipe editor */
+  .recipe-editor{display:flex;flex-direction:column;gap:14px}
+  .ing-row{display:grid;grid-template-columns:1fr 1fr 90px 36px;gap:8px;align-items:center}
+  .ing-row input{padding:9px 11px;border:1.5px solid var(--line-strong);border-radius:7px;background:var(--bg);color:var(--ink);width:100%;font-size:.9rem}
+  .ing-row input:focus{outline:0;border-color:var(--accent)}
+  .ing-row input.gr{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .ing-row .del-btn{background:var(--bad-soft);color:var(--bad);width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .ing-row .del-btn:hover{background:var(--bad);color:#fff}
+  .add-row-btn{background:var(--bg);color:var(--ink-soft);border:1.5px dashed var(--line-strong);padding:9px;border-radius:7px;width:100%;font-weight:500;font-size:.9rem}
+  .add-row-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .photo-preview{width:120px;height:120px;border-radius:8px;object-fit:cover;border:1px solid var(--line);margin-bottom:8px}
+  .photo-placeholder{width:120px;height:120px;border-radius:8px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--ink-mute);font-size:.85rem;border:1.5px dashed var(--line-strong);margin-bottom:8px}
+
+  .dish-list{display:flex;flex-direction:column;gap:8px}
+  .dish-item{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:.15s}
+  .dish-item:hover{border-color:var(--line-strong);background:var(--bg-soft)}
+  .dish-item img{width:50px;height:50px;border-radius:6px;object-fit:cover;flex-shrink:0}
+  .dish-item .ph-mini{width:50px;height:50px;border-radius:6px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--ink-mute);font-size:1.2rem;flex-shrink:0}
+  .dish-item .info{flex:1}
+  .dish-item .info .name{font-weight:600}
+  .dish-item .info .meta{font-size:.85rem;color:var(--ink-mute);margin-top:2px}
+  .dept-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+  .dept-tab{padding:7px 13px;background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;font-size:.85rem;font-weight:500;color:var(--ink-soft);cursor:pointer;transition:.15s}
+  .dept-tab:hover{color:var(--ink)}
+  .dept-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  .chart-card{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:22px}
+  .chart-card h3{margin-bottom:14px;font-size:1rem}
+  .chart-svg{width:100%;height:200px;display:block}
+
+  @media (max-width:800px){
+    #app{grid-template-columns:1fr}
+    .sidebar{flex-direction:row;padding:10px 14px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);gap:4px}
+    .sidebar-brand{padding:8px 12px;border:0;margin:0;flex-shrink:0;font-size:1rem}
+    .sidebar-brand .tag{display:none}
+    .nav-item{padding:8px 12px;font-size:.85rem;flex-shrink:0;width:auto}
+    .nav-item .ico{display:none}
+    .sidebar-bottom{display:none}
+    .content{padding:22px 16px}
+    th,td{padding:10px 12px;font-size:.85rem}
+    h1{font-size:1.5rem}
+    .ing-row{grid-template-columns:1fr 80px 32px;gap:6px}
+    .ing-row input.vi{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="login-view" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">PhoBo<span class="login-tag">админ</span></div>
+    <p class="login-sub">Панель управления тестами поваров</p>
+    <div id="login-error" class="login-error"></div>
+    <div class="form-group">
+      <label>Логин</label>
+      <input type="text" id="login-username" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" id="login-password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" id="login-btn">Войти как админ</button>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sidebar">
+    <div class="sidebar-brand">PhoBo<span class="tag">АДМИН</span></div>
+    <button class="nav-item active" data-view="overview"><span class="ico">▣</span> Обзор</button>
+    <button class="nav-item" data-view="results"><span class="ico">▤</span> Все результаты</button>
+    <button class="nav-item" data-view="users"><span class="ico">◉</span> Аккаунты</button>
+    <button class="nav-item" data-view="by-cook"><span class="ico">◐</span> По поварам</button>
+    <button class="nav-item" data-view="by-dept"><span class="ico">▦</span> По разделам</button>
+    <button class="nav-item" data-view="recipes"><span class="ico">◇</span> Рецепты</button>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <span class="name" id="sb-name">Шеф</span>
+        Администратор
+      </div>
+      <button class="nav-item" id="logout-btn"><span class="ico">←</span> Выйти</button>
+    </div>
+  </aside>
+  <main class="content" id="main-content"></main>
+</div>
+
+<script src="data.js"></script>
+<script>
+const Storage = {
+  getUsers(){
+    const u = localStorage.getItem('phobo_users');
+    if (u) return JSON.parse(u);
+    const d = [
+      {username:'admin',password:'admin123',name:'Шеф',role:'admin'},
+      {username:'povar1',password:'1234',name:'Иван (Повар)',role:'cook'},
+      {username:'povar2',password:'1234',name:'Мария (Повар)',role:'cook'},
+    ];
+    localStorage.setItem('phobo_users', JSON.stringify(d));
+    return d;
+  },
+  saveUsers(u){localStorage.setItem('phobo_users',JSON.stringify(u))},
+  getSession(){const s=localStorage.getItem('phobo_admin_session');return s?JSON.parse(s):null},
+  setSession(u){localStorage.setItem('phobo_admin_session',JSON.stringify(u))},
+  clearSession(){localStorage.removeItem('phobo_admin_session')},
+  getResults(){const r=localStorage.getItem('phobo_results');return r?JSON.parse(r):[]},
+  deleteResult(id){
+    const all = this.getResults().filter(r => r.id !== id);
+    localStorage.setItem('phobo_results', JSON.stringify(all));
+  },
+  getDishOverrides(){const d=localStorage.getItem('phobo_dish_overrides');return d?JSON.parse(d):{dishes:{},pf:{}}},
+  saveDishOverrides(o){localStorage.setItem('phobo_dish_overrides',JSON.stringify(o))},
+};
+
+// Get current dishes (with overrides applied)
+function getDishes(){
+  const o = Storage.getDishOverrides();
+  const m = JSON.parse(JSON.stringify(DISHES));
+  if (o.dishes) Object.keys(o.dishes).forEach(d => m[d] = o.dishes[d]);
+  return m;
+}
+function getPF(){
+  const o = Storage.getDishOverrides();
+  const m = JSON.parse(JSON.stringify(PF_RECIPES));
+  if (o.pf) Object.keys(o.pf).forEach(s => m[s] = o.pf[s]);
+  return m;
+}
+
+let state = {user:null, view:'overview', recipeFilter:{section:null, isPF:false}};
+
+function tryLogin(){
+  const username = document.getElementById('login-username').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.classList.remove('show');
+  if (!username || !password){errEl.textContent='Введи логин и пароль';errEl.classList.add('show');return}
+  const users = Storage.getUsers();
+  const user = users.find(u => u.username === username && u.password === password);
+  if (!user || user.role !== 'admin'){
+    errEl.textContent = 'Неверный логин/пароль или нет прав администратора';
+    errEl.classList.add('show'); return;
+  }
+  Storage.setSession(user); state.user = user; showApp();
+}
+
+function logout(){
+  Storage.clearSession(); state.user = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-view').classList.remove('hidden');
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+function showApp(){
+  document.getElementById('login-view').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('sb-name').textContent = state.user.name;
+  setView('overview');
+}
+
+function setView(view){
+  state.view = view;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+  if (view === 'overview') renderOverview();
+  else if (view === 'results') renderAllResults();
+  else if (view === 'users') renderUsers();
+  else if (view === 'by-cook') renderByCook();
+  else if (view === 'by-dept') renderByDept();
+  else if (view === 'recipes') renderRecipes();
+  window.scrollTo(0, 0);
+}
+
+function renderOverview(){
+  const main = document.getElementById('main-content');
+  const users = Storage.getUsers();
+  const cooks = users.filter(u => u.role === 'cook');
+  const results = Storage.getResults();
+  const totalAttempts = results.length;
+  const avgScore = totalAttempts > 0
+    ? Math.round(results.reduce((s, r) => s + (r.mode==='attestation'?r.score*100:r.correct/r.total*100), 0) / totalAttempts) : 0;
+  const last7 = results.filter(r => Date.now() - new Date(r.completedAt).getTime() < 7*24*3600*1000).length;
+  const attCount = results.filter(r => r.mode === 'attestation').length;
+
+  const recent = results.slice().reverse().slice(0, 8);
+  const recentRows = recent.length > 0 ? recent.map(r => {
+    const isAtt = r.mode === 'attestation';
+    const pct = isAtt ? Math.round(r.score*100) : Math.round(r.correct/r.total*100);
+    const cls = pct >= 80 ? 'good' : pct >= 60 ? '' : 'bad';
+    const date = new Date(r.completedAt).toLocaleString('ru-RU', {dateStyle:'short', timeStyle:'short'});
+    const detail = isAtt ? (r.dish.ru) : (r.correct + '/' + r.total);
+    return `<tr class="row-clickable" data-id="${r.id}">
+      <td><strong>${escapeHtml(r.name)}</strong></td>
+      <td>${escapeHtml(r.department)}${isAtt ? '<span class="att-tag">атт</span>' : ''}</td>
+      <td>${escapeHtml(detail)}</td>
+      <td class="score-cell ${cls}">${pct}%</td>
+      <td>${date}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5" class="empty-state">Никто ещё не проходил тестов</td></tr>';
+
+  // Chart of last 30 days
+  const chart = renderTrendChart(results);
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">Главная</div>
+      <h1>Обзор</h1>
+      <p>Сводка по тестам твоей кухни.</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">Поваров</div><div class="value">${cooks.length}</div></div>
+      <div class="stat-card"><div class="label">Тестов всего</div><div class="value">${totalAttempts}</div></div>
+      <div class="stat-card"><div class="label">Аттестаций</div><div class="value">${attCount}</div></div>
+      <div class="stat-card"><div class="label">За 7 дней</div><div class="value">${last7}</div></div>
+      <div class="stat-card"><div class="label">Средний балл</div><div class="value ${avgScore>=80?'good':avgScore<60?'bad':''}">${avgScore}<span class="small">%</span></div></div>
+    </div>
+    ${chart ? '<div class="chart-card"><h3>Динамика среднего балла кухни (по дням)</h3>' + chart + '</div>' : ''}
+    <h3 style="margin-bottom:12px;">Последние тесты</h3>
+    <div class="table-wrap">
+      <table><thead><tr><th>Повар</th><th>Раздел</th><th>Детали</th><th>Балл</th><th>Когда</th></tr></thead>
+      <tbody>${recentRows}</tbody></table>
+    </div>`;
+
+  document.querySelectorAll('.row-clickable').forEach(row => {
+    row.addEventListener('click', () => showResultDetail(row.dataset.id));
+  });
+}
+
+function renderAllResults(){
+  const main = document.getElementById('main-content');
+  const users = Storage.getUsers().filter(u => u.role === 'cook');
+  const departments = [...new Set([...Object.keys(DISHES), ...Object.keys(PF_RECIPES)])];
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">Результаты</div>
+      <h1>Все попытки</h1>
+      <p>Каждое прохождение теста или аттестации.</p>
+    </div>
+    <div class="filters">
+      <div class="filter-group"><label>Повар</label>
+        <select id="f-user"><option value="">Все</option>${users.map(u => '<option value="' + escapeHtml(u.username) + '">' + escapeHtml(u.name) + '</option>').join('')}</select>
+      </div>
+      <div class="filter-group"><label>Раздел</label>
+        <select id="f-dept"><option value="">Все</option>${departments.map(d => '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + '</option>').join('')}</select>
+      </div>
+      <div class="filter-group"><label>Тип</label>
+        <select id="f-mode"><option value="">Все</option><option value="test">Тест</option><option value="attestation">Аттестация</option></select>
+      </div>
+      <div class="filter-group"><label>Только провалы</label>
+        <select id="f-fails"><option value="">Нет</option><option value="1">&lt;60%</option></select>
+      </div>
+    </div>
+    <div id="results-table"></div>`;
+
+  const refresh = () => {
+    const fUser = document.getElementById('f-user').value;
+    const fDept = document.getElementById('f-dept').value;
+    const fMode = document.getElementById('f-mode').value;
+    const fFails = document.getElementById('f-fails').value;
+    let results = Storage.getResults().slice().reverse();
+    if (fUser) results = results.filter(r => r.username === fUser);
+    if (fDept) results = results.filter(r => r.department === fDept);
+    if (fMode) results = results.filter(r => (r.mode || 'test') === fMode);
+    if (fFails) results = results.filter(r => {
+      const pct = r.mode==='attestation' ? r.score*100 : r.correct/r.total*100;
+      return pct < 60;
+    });
+
+    const rows = results.length > 0 ? results.map(r => {
+      const isAtt = r.mode === 'attestation';
+      const pct = isAtt ? Math.round(r.score*100) : Math.round(r.correct/r.total*100);
+      const cls = pct >= 80 ? 'good' : pct >= 60 ? '' : 'bad';
+      const date = new Date(r.completedAt).toLocaleString('ru-RU', {dateStyle:'short', timeStyle:'short'});
+      const detail = isAtt ? (r.dish.ru) : (r.correct + '/' + r.total + ' верно');
+      return `<tr class="row-clickable" data-id="${r.id}">
+        <td><strong>${escapeHtml(r.name)}</strong></td>
+        <td>${escapeHtml(r.department)}</td>
+        <td>${isAtt ? '<span class="badge badge-warn">аттестация</span>' : '<span class="badge badge-neutral">тест</span>'}</td>
+        <td class="wrap">${escapeHtml(detail)}</td>
+        <td class="score-cell ${cls}">${pct}%</td>
+        <td>${date}</td>
+        <td>${r.durationSec ? Math.round(r.durationSec/60) + ' мин' : '—'}</td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="7" class="empty-state">Нет результатов по этим фильтрам</td></tr>';
+
+    document.getElementById('results-table').innerHTML = `
+      <div class="table-wrap"><table>
+        <thead><tr><th>Повар</th><th>Раздел</th><th>Тип</th><th>Детали</th><th>Балл</th><th>Когда</th><th>Время</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+      <p style="margin-top:12px;color:var(--ink-mute);font-size:.85rem;">Найдено: ${results.length}. Кликни строку чтобы увидеть разбор.</p>`;
+
+    document.querySelectorAll('.row-clickable').forEach(row => {
+      row.addEventListener('click', () => showResultDetail(row.dataset.id));
+    });
+  };
+
+  ['f-user','f-dept','f-mode','f-fails'].forEach(id => document.getElementById(id).addEventListener('change', refresh));
+  refresh();
+}
+
+function showResultDetail(id){
+  const r = Storage.getResults().find(x => x.id === id);
+  if (!r) return;
+  const isAtt = r.mode === 'attestation';
+  const pct = isAtt ? Math.round(r.score*100) : Math.round(r.correct/r.total*100);
+  const cls = pct >= 80 ? 'good' : pct >= 60 ? '' : 'bad';
+  const date = new Date(r.completedAt).toLocaleString('ru-RU', {dateStyle:'long', timeStyle:'short'});
+
+  let body;
+  if (isAtt){
+    const gradeHtml = (r.grading || []).map(g => {
+      if (g.status === 'correct'){
+        return `<div class="att-grade-row correct"><div class="att-icon correct">✓</div><div><strong>${escapeHtml(g.truthRu)}</strong> · ${escapeHtml(g.truthGrams)}г</div></div>`;
+      }
+      if (g.status === 'wrong-gram'){
+        return `<div class="att-grade-row wrong-gram"><div class="att-icon wrong-gram">!</div><div><strong>${escapeHtml(g.truthRu)}</strong> — повар: ${escapeHtml(g.userGrams)}г, надо: <strong>${escapeHtml(g.truthGrams)}г</strong></div></div>`;
+      }
+      if (g.status === 'missing'){
+        return `<div class="att-grade-row missing"><div class="att-icon missing">−</div><div><strong>${escapeHtml(g.truthRu)}</strong> · ${escapeHtml(g.truthGrams)}г · забыл</div></div>`;
+      }
+      if (g.status === 'extra'){
+        return `<div class="att-grade-row extra"><div class="att-icon extra">+</div><div>${escapeHtml(g.userName||'?')} · ${escapeHtml(g.userGrams||'?')}г · лишнее</div></div>`;
+      }
+      return '';
+    }).join('');
+    body = `<p style="color:var(--ink-soft);margin-bottom:18px;">${escapeHtml(r.dish.ru)} (${escapeHtml(r.dish.vi)}) · ${date} · <span class="score-cell ${cls}" style="font-family:'Fraunces',serif;font-weight:600;">${pct}% (${r.correct}/${r.total})</span></p>
+      <div style="max-height:50vh;overflow-y:auto;margin-bottom:18px;">${gradeHtml}</div>`;
+  } else {
+    const reviewHtml = (r.answers || []).map((a, i) => {
+      const userAnsText = (a.userAnswer !== null && a.userAnswer !== undefined) ? a.options[a.userAnswer] : '— нет ответа —';
+      const correctAnsText = a.options[a.correct];
+      const qText = (a.question && typeof a.question === 'object') ? a.question.main : a.question;
+      return `<div class="question-review ${a.isCorrect?'correct':'wrong'}">
+        <div class="q-text">${i+1}. ${escapeHtml(qText)}</div>
+        <div class="answer-line">Ответ: <strong>${escapeHtml(userAnsText)}</strong> ${a.isCorrect?'✓':'✗'}</div>
+        ${!a.isCorrect ? '<div class="answer-line correct-ans">Правильно: <strong>' + escapeHtml(correctAnsText) + '</strong></div>' : ''}
+      </div>`;
+    }).join('');
+    body = `<p style="color:var(--ink-soft);margin-bottom:18px;">${date} · <span class="score-cell ${cls}" style="font-family:'Fraunces',serif;font-weight:600;">${pct}% (${r.correct}/${r.total})</span></p>
+      <div style="max-height:50vh;overflow-y:auto;margin-bottom:18px;">${reviewHtml}</div>`;
+  }
+
+  showModal(`
+    <h3>${escapeHtml(r.name)} · ${escapeHtml(r.department)}${isAtt?' · Аттестация':''}</h3>
+    ${body}
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-danger btn-sm" id="del-result">Удалить попытку</button>
+      <button class="btn btn-ghost btn-sm" id="close-modal">Закрыть</button>
+    </div>`);
+
+  document.getElementById('close-modal').addEventListener('click', closeModal);
+  document.getElementById('del-result').addEventListener('click', () => {
+    if (confirm('Удалить эту попытку?')){
+      Storage.deleteResult(id);
+      closeModal();
+      setView(state.view);
+    }
+  });
+}
+
+function renderUsers(){
+  const main = document.getElementById('main-content');
+  const users = Storage.getUsers();
+  const rows = users.map((u, idx) => {
+    const userResults = Storage.getResults().filter(r => r.username === u.username);
+    return `<tr>
+      <td><strong>${escapeHtml(u.name)}</strong></td>
+      <td><code style="background:var(--bg-soft);padding:2px 6px;border-radius:4px;">${escapeHtml(u.username)}</code></td>
+      <td>${u.role === 'admin' ? '<span class="badge badge-good">Админ</span>' : '<span class="badge badge-neutral">Повар</span>'}</td>
+      <td class="num">${userResults.length}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" data-edit="${idx}">Изменить</button>
+        ${u.username !== state.user.username ? '<button class="btn btn-danger btn-sm" data-del="' + idx + '">Удалить</button>' : ''}
+      </td>
+    </tr>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">Аккаунты</div>
+      <h1>Управление аккаунтами</h1>
+      <p>Создавай аккаунты для поваров. Только ты можешь добавлять новых.</p>
+    </div>
+    <div style="margin-bottom:18px;"><button class="btn btn-primary" id="add-user">+ Добавить аккаунт</button></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Имя</th><th>Логин</th><th>Роль</th><th>Тестов</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+
+  document.getElementById('add-user').addEventListener('click', () => showUserModal(null));
+  document.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => showUserModal(parseInt(b.dataset.edit))));
+  document.querySelectorAll('[data-del]').forEach(b => {
+    b.addEventListener('click', () => {
+      const idx = parseInt(b.dataset.del);
+      if (confirm('Удалить аккаунт «' + users[idx].name + '»? История его тестов сохранится.')){
+        users.splice(idx, 1); Storage.saveUsers(users); renderUsers();
+      }
+    });
+  });
+}
+
+function showUserModal(editIdx){
+  const users = Storage.getUsers();
+  const u = editIdx !== null ? users[editIdx] : {username:'',password:'',name:'',role:'cook'};
+  const isEdit = editIdx !== null;
+
+  showModal(`
+    <h3>${isEdit?'Изменить аккаунт':'Новый аккаунт'}</h3>
+    <div class="form-group"><label>Имя (как видно в результатах)</label>
+      <input type="text" id="u-name" value="${escapeHtml(u.name)}" placeholder="Иван Петров"></div>
+    <div class="form-group"><label>Логин (латиница, без пробелов)</label>
+      <input type="text" id="u-username" value="${escapeHtml(u.username)}" ${isEdit?'readonly style="opacity:.6;"':''} placeholder="ivan"></div>
+    <div class="form-group"><label>Пароль ${isEdit?'(пусто = не менять)':''}</label>
+      <input type="text" id="u-password" placeholder="${isEdit?'••••••':'минимум 4 символа'}"></div>
+    <div class="form-group"><label>Роль</label>
+      <select id="u-role" ${u.username===state.user.username?'disabled':''}>
+        <option value="cook" ${u.role==='cook'?'selected':''}>Повар</option>
+        <option value="admin" ${u.role==='admin'?'selected':''}>Админ</option>
+      </select></div>
+    <div id="u-error" class="login-error"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn btn-ghost btn-sm" id="close-modal">Отмена</button>
+      <button class="btn btn-primary btn-sm" id="save-user">Сохранить</button>
+    </div>`);
+
+  document.getElementById('close-modal').addEventListener('click', closeModal);
+  document.getElementById('save-user').addEventListener('click', () => {
+    const name = document.getElementById('u-name').value.trim();
+    const username = document.getElementById('u-username').value.trim().toLowerCase();
+    const password = document.getElementById('u-password').value;
+    const role = document.getElementById('u-role').value;
+    const errEl = document.getElementById('u-error');
+
+    if (!name || !username){errEl.textContent='Заполни имя и логин';errEl.classList.add('show');return}
+    if (!isEdit && (!password || password.length < 4)){errEl.textContent='Пароль минимум 4 символа';errEl.classList.add('show');return}
+    if (!/^[a-z0-9_]+$/.test(username)){errEl.textContent='Логин: латиница, цифры, _';errEl.classList.add('show');return}
+    if (!isEdit && users.some(x => x.username === username)){errEl.textContent='Такой логин уже занят';errEl.classList.add('show');return}
+
+    const fresh = Storage.getUsers();
+    if (isEdit){
+      fresh[editIdx].name = name;
+      if (password) fresh[editIdx].password = password;
+      if (fresh[editIdx].username !== state.user.username) fresh[editIdx].role = role;
+    } else {
+      fresh.push({username, password, name, role});
+    }
+    Storage.saveUsers(fresh);
+    closeModal();
+    renderUsers();
+  });
+}
+
+function renderByCook(){
+  const main = document.getElementById('main-content');
+  const users = Storage.getUsers().filter(u => u.role === 'cook');
+  const results = Storage.getResults();
+
+  const stats = users.map(u => {
+    const ur = results.filter(r => r.username === u.username);
+    const total = ur.length;
+    const avgPct = total > 0 ? Math.round(ur.reduce((s,r) => s + (r.mode==='attestation'?r.score*100:r.correct/r.total*100), 0) / total) : 0;
+    const fails = ur.filter(r => (r.mode==='attestation'?r.score*100:r.correct/r.total*100) < 60).length;
+    const att = ur.filter(r => r.mode === 'attestation').length;
+    const lastDate = ur.length > 0 ? new Date(ur[ur.length-1].completedAt) : null;
+    return {...u, total, avgPct, fails, att, lastDate, results: ur};
+  }).sort((a,b) => b.total - a.total);
+
+  const rows = stats.length > 0 ? stats.map(u => {
+    const cls = u.avgPct >= 80 ? 'good' : u.avgPct >= 60 ? '' : 'bad';
+    const lastStr = u.lastDate ? u.lastDate.toLocaleDateString('ru-RU') : '—';
+    return `<tr class="row-clickable" data-username="${escapeHtml(u.username)}">
+      <td><strong>${escapeHtml(u.name)}</strong></td>
+      <td class="num">${u.total}</td>
+      <td class="num">${u.att}</td>
+      <td class="score-cell ${cls}">${u.total>0?u.avgPct+'%':'—'}</td>
+      <td>${u.fails>0?'<span class="badge badge-bad">'+u.fails+'</span>':'<span class="badge badge-good">0</span>'}</td>
+      <td>${lastStr}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="6" class="empty-state">Аккаунтов поваров нет</td></tr>';
+
+  // Build chart per cook
+  const cookCharts = stats.filter(u => u.results.length >= 2).map(u => 
+    `<div class="chart-card"><h3>${escapeHtml(u.name)}</h3>${renderTrendChart(u.results)}</div>`
+  ).join('');
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">Аналитика</div>
+      <h1>По поварам</h1>
+      <p>Кто как справляется. Кликни строку чтобы увидеть все его попытки.</p>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Повар</th><th>Тестов</th><th>Аттестаций</th><th>Средний балл</th><th>Провалы</th><th>Последний</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    ${cookCharts ? '<h3 style="margin-top:32px;margin-bottom:14px;">Графики прогресса</h3>' + cookCharts : ''}`;
+
+  document.querySelectorAll('[data-username]').forEach(row => {
+    row.addEventListener('click', () => {
+      setView('results');
+      setTimeout(() => {
+        const sel = document.getElementById('f-user');
+        if (sel){ sel.value = row.dataset.username; sel.dispatchEvent(new Event('change')); }
+      }, 50);
+    });
+  });
+}
+
+function renderByDept(){
+  const main = document.getElementById('main-content');
+  const results = Storage.getResults();
+  const allDepts = [...new Set([...Object.keys(getDishes()), ...Object.keys(getPF())])];
+
+  const deptStats = allDepts.map(d => {
+    const dr = results.filter(r => r.department === d);
+    const total = dr.length;
+    const avgPct = total > 0 ? Math.round(dr.reduce((s,r) => s + (r.mode==='attestation'?r.score*100:r.correct/r.total*100), 0) / total) : 0;
+    const fails = dr.filter(r => (r.mode==='attestation'?r.score*100:r.correct/r.total*100) < 60).length;
+    const items = (getDishes()[d] || getPF()[d] || []).length;
+    return {department:d, total, avgPct, fails, items, qCount:(QUESTIONS_DB[d]||[]).length};
+  }).sort((a,b) => b.total - a.total);
+
+  const rows = deptStats.map(d => {
+    const cls = d.avgPct >= 80 ? 'good' : d.avgPct >= 60 ? '' : 'bad';
+    return `<tr class="row-clickable" data-dept="${escapeHtml(d.department)}">
+      <td><strong>${escapeHtml(d.department)}</strong></td>
+      <td class="num">${d.items}</td>
+      <td class="num">${d.qCount}</td>
+      <td class="num">${d.total}</td>
+      <td class="score-cell ${cls}">${d.total>0?d.avgPct+'%':'—'}</td>
+      <td>${d.fails>0?'<span class="badge badge-bad">'+d.fails+'</span>':'<span class="badge badge-good">0</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">Аналитика</div>
+      <h1>По разделам</h1>
+      <p>Где у кухни слабые места.</p>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Раздел</th><th>Блюд</th><th>Вопросов</th><th>Попыток</th><th>Средний балл</th><th>Провалы</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+
+  document.querySelectorAll('[data-dept]').forEach(row => {
+    row.addEventListener('click', () => {
+      setView('results');
+      setTimeout(() => {
+        const sel = document.getElementById('f-dept');
+        if (sel){ sel.value = row.dataset.dept; sel.dispatchEvent(new Event('change')); }
+      }, 50);
+    });
+  });
+}
+
+// ============ RECIPE EDITOR ============
+function renderRecipes(){
+  const main = document.getElementById('main-content');
+  const dishes = getDishes();
+  const pf = getPF();
+  const allSections = [
+    ...Object.keys(dishes).map(d => ({name:d, isPF:false})),
+    ...Object.keys(pf).map(d => ({name:d, isPF:true}))
+  ];
+  
+  if (!state.recipeFilter.section && allSections.length > 0){
+    state.recipeFilter = {section: allSections[0].name, isPF: allSections[0].isPF};
+  }
+  
+  const tabsHtml = allSections.map(s => {
+    const isActive = state.recipeFilter.section === s.name && state.recipeFilter.isPF === s.isPF;
+    return `<button class="dept-tab ${isActive?'active':''}" data-section="${escapeHtml(s.name)}" data-pf="${s.isPF?'1':'0'}">${escapeHtml(s.name)}${s.isPF?' (ПФ)':''}</button>`;
+  }).join('');
+  
+  const items = state.recipeFilter.isPF ? (pf[state.recipeFilter.section] || []) : (dishes[state.recipeFilter.section] || []);
+  
+  const dishesHtml = items.length > 0 ? items.map((dish, idx) => {
+    const photoEl = dish.photo
+      ? '<img src="' + escapeHtml(dish.photo) + '">'
+      : '<div class="ph-mini">◇</div>';
+    return `<div class="dish-item" data-idx="${idx}">
+      ${photoEl}
+      <div class="info">
+        <div class="name">${escapeHtml(dish.ru)} ${dish.portion ? '<span style="color:var(--ink-mute);font-weight:400;">· ' + dish.portion + 'г</span>' : ''}</div>
+        <div class="meta">${escapeHtml(dish.vi)} · ${dish.ingredients.length} ингредиентов</div>
+      </div>
+      <span style="color:var(--ink-mute);">→</span>
+    </div>`;
+  }).join('') : '<div class="empty-state">В этом разделе пусто</div>';
+
+  main.innerHTML = `
+    <div class="pageheader">
+      <div class="crumb">Рецепты</div>
+      <h1>Управление рецептами</h1>
+      <p>Меняй ингредиенты и граммовки. Изменения сразу применяются в тестах и аттестациях. Можешь добавить фото блюд (необязательно).</p>
+    </div>
+    <div class="dept-tabs">${tabsHtml}</div>
+    <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="color:var(--ink-soft);font-size:.9rem;">${items.length} блюд</span>
+      <button class="btn btn-primary btn-sm" id="add-dish">+ Новое блюдо</button>
+    </div>
+    <div class="dish-list">${dishesHtml}</div>`;
+  
+  document.querySelectorAll('.dept-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      state.recipeFilter = {section: t.dataset.section, isPF: t.dataset.pf === '1'};
+      renderRecipes();
+    });
+  });
+  document.querySelectorAll('.dish-item').forEach(d => {
+    d.addEventListener('click', () => editRecipe(parseInt(d.dataset.idx)));
+  });
+  document.getElementById('add-dish').addEventListener('click', () => editRecipe(null));
+}
+
+function editRecipe(idx){
+  const isPF = state.recipeFilter.isPF;
+  const section = state.recipeFilter.section;
+  const items = isPF ? getPF()[section] : getDishes()[section];
+  
+  const isNew = idx === null;
+  const dish = isNew 
+    ? {ru:'', vi:'', portion:'', photo:'', ingredients:[{ru:'',vi:'',grams:''}]}
+    : JSON.parse(JSON.stringify(items[idx]));
+  if (!dish.ingredients) dish.ingredients = [];
+  
+  function renderModalContent(){
+    const ingsHtml = dish.ingredients.map((ing, i) => `
+      <div class="ing-row">
+        <input type="text" placeholder="Ингредиент (RU)" value="${escapeHtml(ing.ru || '')}" data-idx="${i}" data-field="ru">
+        <input type="text" class="vi" placeholder="Tên (VI)" value="${escapeHtml(ing.vi || '')}" data-idx="${i}" data-field="vi">
+        <input type="text" class="gr" inputmode="decimal" placeholder="г" value="${escapeHtml(ing.grams || '')}" data-idx="${i}" data-field="grams">
+        <button class="del-btn" data-del="${i}">×</button>
+      </div>`).join('');
+    
+    const photoEl = dish.photo 
+      ? '<img class="photo-preview" src="' + escapeHtml(dish.photo) + '">'
+      : '<div class="photo-placeholder">нет фото</div>';
+    
+    return `
+      <h3>${isNew ? 'Новое блюдо' : 'Редактирование рецепта'}${dish.ru ? ': ' + escapeHtml(dish.ru) : ''}</h3>
+      <div class="form-group">
+        <label>Название (русский)</label>
+        <input type="text" id="d-ru" value="${escapeHtml(dish.ru)}" placeholder="Суп Фо Бо">
+      </div>
+      <div class="form-group">
+        <label>Tên (tiếng Việt)</label>
+        <input type="text" id="d-vi" value="${escapeHtml(dish.vi)}" placeholder="Phở Bò">
+      </div>
+      <div class="form-group">
+        <label>Порция (граммы, опционально)</label>
+        <input type="text" id="d-portion" value="${escapeHtml(dish.portion || '')}" placeholder="800">
+      </div>
+      <div class="form-group">
+        <label>Фото блюда (опционально)</label>
+        ${photoEl}
+        <input type="file" id="d-photo-file" accept="image/*" style="margin-bottom:8px;">
+        <div style="display:flex;gap:6px;">
+          ${dish.photo ? '<button class="btn btn-danger btn-sm" id="d-photo-remove">Убрать фото</button>' : ''}
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Ингредиенты (Поле RU обязательно. VI можно оставить пустым.)</label>
+        <div class="recipe-editor" id="ings-editor">${ingsHtml}</div>
+        <button class="add-row-btn" id="add-ing" style="margin-top:8px;">+ Добавить ингредиент</button>
+      </div>
+      <div id="r-error" class="login-error"></div>
+      <div style="display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap;">
+        ${!isNew ? '<button class="btn btn-danger btn-sm" id="r-delete">Удалить блюдо</button>' : '<span></span>'}
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" id="close-modal">Отмена</button>
+          <button class="btn btn-primary btn-sm" id="r-save">Сохранить</button>
+        </div>
+      </div>`;
+  }
+  
+  function bindModalEvents(){
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    
+    document.querySelectorAll('#ings-editor input').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const i = parseInt(e.target.dataset.idx);
+        dish.ingredients[i][e.target.dataset.field] = e.target.value;
+      });
+    });
+    document.querySelectorAll('#ings-editor .del-btn').forEach(b => {
+      b.addEventListener('click', e => {
+        const i = parseInt(e.target.dataset.del);
+        dish.ingredients.splice(i, 1);
+        if (dish.ingredients.length === 0) dish.ingredients = [{ru:'',vi:'',grams:''}];
+        rerender();
+      });
+    });
+    document.getElementById('add-ing').addEventListener('click', () => {
+      dish.ingredients.push({ru:'',vi:'',grams:''});
+      rerender();
+      setTimeout(() => {
+        const inputs = document.querySelectorAll('#ings-editor input[data-field="ru"]');
+        if (inputs.length) inputs[inputs.length-1].focus();
+      }, 50);
+    });
+    
+    document.getElementById('d-photo-file').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      // Resize to ~600px max via canvas to keep storage small
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 600;
+          const ratio = Math.min(1, maxW / img.width);
+          const w = Math.round(img.width * ratio);
+          const h = Math.round(img.height * ratio);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          dish.photo = canvas.toDataURL('image/jpeg', 0.7);
+          rerender();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    if (document.getElementById('d-photo-remove')){
+      document.getElementById('d-photo-remove').addEventListener('click', () => {
+        dish.photo = '';
+        rerender();
+      });
+    }
+    
+    if (document.getElementById('r-delete')){
+      document.getElementById('r-delete').addEventListener('click', () => {
+        if (!confirm('Точно удалить блюдо «' + dish.ru + '»?')) return;
+        const overrides = Storage.getDishOverrides();
+        const target = isPF ? 'pf' : 'dishes';
+        if (!overrides[target]) overrides[target] = {};
+        if (!overrides[target][section]) overrides[target][section] = JSON.parse(JSON.stringify(items));
+        overrides[target][section].splice(idx, 1);
+        Storage.saveDishOverrides(overrides);
+        closeModal();
+        renderRecipes();
+      });
+    }
+    
+    // Save inputs as user types into dish ru/vi/portion
+    ['d-ru','d-vi','d-portion'].forEach(id => {
+      document.getElementById(id).addEventListener('input', e => {
+        const key = id.replace('d-','');
+        dish[key] = e.target.value;
+      });
+    });
+    
+    document.getElementById('r-save').addEventListener('click', () => {
+      const errEl = document.getElementById('r-error');
+      errEl.classList.remove('show');
+      
+      if (!dish.ru.trim()){errEl.textContent='Заполни название (RU)';errEl.classList.add('show');return}
+      // Filter out empty ingredient rows
+      const validIngs = dish.ingredients.filter(i => i.ru && i.ru.trim() && i.grams && String(i.grams).trim());
+      if (validIngs.length === 0){errEl.textContent='Добавь хотя бы один ингредиент';errEl.classList.add('show');return}
+      
+      const finalDish = {
+        ru: dish.ru.trim(),
+        vi: (dish.vi || '').trim(),
+        portion: (dish.portion || '').trim() || null,
+        photo: dish.photo || '',
+        ingredients: validIngs.map(i => ({
+          ru: i.ru.trim(), vi: (i.vi || '').trim(), grams: String(i.grams).trim()
+        })),
+        instruction_ru: dish.instruction_ru || null,
+        instruction_vi: dish.instruction_vi || null
+      };
+      
+      const overrides = Storage.getDishOverrides();
+      const target = isPF ? 'pf' : 'dishes';
+      if (!overrides[target]) overrides[target] = {};
+      if (!overrides[target][section]) overrides[target][section] = JSON.parse(JSON.stringify(items));
+      
+      if (isNew){
+        overrides[target][section].push(finalDish);
+      } else {
+        overrides[target][section][idx] = finalDish;
+      }
+      Storage.saveDishOverrides(overrides);
+      closeModal();
+      renderRecipes();
+    });
+  }
+  
+  function rerender(){
+    document.querySelector('.modal').innerHTML = renderModalContent();
+    bindModalEvents();
+  }
+  
+  showModal(renderModalContent());
+  bindModalEvents();
+}
+
+// ============ TREND CHART ============
+function renderTrendChart(results){
+  if (!results || results.length < 2) return '';
+  const byDate = {};
+  results.forEach(r => {
+    const day = new Date(r.completedAt).toISOString().slice(0, 10);
+    const pct = r.mode === 'attestation' ? r.score * 100 : (r.correct / r.total * 100);
+    if (!byDate[day]) byDate[day] = [];
+    byDate[day].push(pct);
+  });
+  const dates = Object.keys(byDate).sort();
+  if (dates.length < 2) return '';
+  const points = dates.map(d => ({date:d, avg: byDate[d].reduce((s,v)=>s+v,0) / byDate[d].length}));
+  
+  const W = 800, H = 200, PAD_L = 36, PAD_R = 12, PAD_T = 14, PAD_B = 28;
+  const innerW = W - PAD_L - PAD_R, innerH = H - PAD_T - PAD_B;
+  const xStep = points.length > 1 ? innerW / (points.length - 1) : innerW;
+  const xy = points.map((p, i) => ({
+    x: PAD_L + i * xStep,
+    y: PAD_T + innerH - (p.avg / 100) * innerH,
+    avg: p.avg, date: p.date
+  }));
+  const linePath = xy.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+  const areaPath = linePath + ' L' + xy[xy.length-1].x + ',' + (PAD_T+innerH) + ' L' + xy[0].x + ',' + (PAD_T+innerH) + ' Z';
+
+  const yLabels = [0, 50, 100].map(v => {
+    const y = PAD_T + innerH - (v / 100) * innerH;
+    return `<line x1="${PAD_L}" y1="${y}" x2="${W - PAD_R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2,3"/>
+      <text x="${PAD_L - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="var(--ink-mute)">${v}%</text>`;
+  }).join('');
+  const xLabelIdxs = points.length <= 5 ? points.map((_, i) => i) : [0, Math.floor(points.length/2), points.length - 1];
+  const xLabels = xLabelIdxs.map(i => {
+    const d = new Date(points[i].date);
+    const lbl = d.toLocaleDateString('ru-RU', {day:'numeric', month:'short'});
+    return `<text x="${xy[i].x}" y="${H - 8}" text-anchor="middle" font-size="10" fill="var(--ink-mute)">${lbl}</text>`;
+  }).join('');
+  const dots = xy.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="var(--accent)"/>`).join('');
+
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    ${yLabels}
+    <path d="${areaPath}" fill="var(--accent-soft)" opacity="0.6"/>
+    <path d="${linePath}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    ${dots}
+    ${xLabels}
+  </svg>`;
+}
+
+function showModal(html){
+  closeModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'modal-overlay';
+  overlay.innerHTML = '<div class="modal">' + html + '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+}
+function closeModal(){
+  const m = document.getElementById('modal-overlay');
+  if (m) m.remove();
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('login-btn').addEventListener('click', tryLogin);
+['login-username','login-password'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+});
+document.getElementById('logout-btn').addEventListener('click', logout);
+document.querySelectorAll('.nav-item[data-view]').forEach(n => n.addEventListener('click', () => setView(n.dataset.view)));
+
+const session = Storage.getSession();
+if (session && session.role === 'admin'){ state.user = session; showApp(); }
+</script>
+</body>
+</html>
